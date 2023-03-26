@@ -1,5 +1,11 @@
+# VS project folder
 /minibasic-translator
-det_analizer.h
+
+# Test object files
+automa69.h
+analizer69.h
+FSA.h
+FSA.cpp
 
 # Prerequisites
 *.d
