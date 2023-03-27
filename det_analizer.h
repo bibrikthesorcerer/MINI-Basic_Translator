@@ -20,6 +20,23 @@ public:
    ~State() {}
 };
 
+//перечисления "символьная лексема" и "лексема"
+class symbol_lexem 
+{
+public:
+   std::string m_name;
+   size_t m_id;
+   symbol_lexem& operator=(const char* str) { m_name = str; return *this; }
+};
+class Lexem
+{
+public:
+   std::string m_name;
+   size_t m_id;
+   Lexem& operator=(const char* str) { m_name = str; return *this; }
+
+};
+
 //определим указатель на функции
 typedef State(*funct_ptr)();
 
@@ -32,25 +49,24 @@ public:
    */
    virtual void parse();
 
-   //перечисления "символьная лексема" и "лексема"
-   enum class symbolLexem;
-   enum class Lexem;
 
    //структура inp_symbol - представляет символ и его принадлежность к алфавиту конечного автомата
    struct inp_symbol
    {
       int s_value; //ASCII - код символа
-      symbolLexem s_class; //принадлежность к алфавиту
+      symbol_lexem s_class; //принадлежность к алфавиту
    };
 
 
 protected:
-   std::map<State, std::map<symbolLexem,funct_ptr>> m_func_table;    //таблица переходов анализатора
+   std::map<State, std::map<symbol_lexem,funct_ptr>> m_func_table;    //таблица переходов анализатора
    std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list; //список лексем анализатора
    std::map<std::string, double> m_name_table;                       //таблица имён
    State m_curr_state;                                               //текущее состояние анализатора
    inp_symbol m_curr_sym;                                            //текущий входной символ
    std::fstream m_file;                                              //рабочий файловый поток
+   std::map<std::string, size_t> m_sym_lex_collection;
+   std::map<std::string, size_t> m_collect_of_lex;
 
 
    /*
