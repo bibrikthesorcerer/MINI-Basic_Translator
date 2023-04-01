@@ -5,55 +5,87 @@
 #include <string>
 #include <map>
 #include <list>
-#include "det_analizer.h"
+#include "Determ_analizer.h"
 
 
 
-class Lex_block_mb : public det_analizer
+class Lex_block : public Determ_analizer
 {
 public:
-   //enum class symbol_lexem
-   //{
-   //   sl_letter, 
-   //   sl_digit, 
-   //   sl_aur_op, 
-   //   sl_relat,
-   //   sl_op_brace,
-   //   sl_cls_brace,
-   //   sl_dot,
-   //   sl_space,
-   //   sl_lf,
-   //   sl_eof,
-   //   sl_error
-   //};
-   //enum class Lexem {
-   //   lex_line, lex_operand, lex_aur_oper,
-   //   lex_relation, lex_next, lex_let,
-   //   lex_for, lex_goto, lex_gosub,
-   //   lex_op_brace, lex_cls_brace, lex_if, 
-   //   lex_return, lex_end, lex_to,
-   //   lex_step, lex_rem, lex_error,
-   //   lex_eof
-   //};
 
-   Lex_block_mb(std::string filename);
+   /*
+   Символьные лексемы:
+      sl_letter, 
+      sl_digit, 
+      sl_aur_op, 
+      sl_relat,
+      sl_op_brace,
+      sl_cls_brace,
+      sl_dot,
+      sl_space,
+      sl_lf,
+      sl_eof,
+      sl_error
+   
+   Лексемы:
+      lex_line, 
+      lex_operand, 
+      lex_aur_oper,
+      lex_relation, 
+      lex_next, 
+      lex_let,
+      lex_for, 
+      lex_goto, 
+      lex_gosub,
+      lex_op_brace, 
+      lex_cls_brace, 
+      lex_if, 
+      lex_return, 
+      lex_end, 
+      lex_to,
+      lex_step, 
+      lex_rem, 
+      lex_error,
+      lex_eof
+   */
 
-   typedef State(Lex_block_mb::*funct_ptr)();
+   /*Определим fucnt_ptr - указатель на метод класса.
+   funct_ptr может принимать указатели на методы класса, соответствующие следующему прототипу:
+   State Lex_block::ИМЯ_МЕТОДА ()
+   */
+   typedef State (Lex_block::*funct_ptr)();
+
+
+   /*@brief Удалим конструктор по умолчанию и оставим лишь конструктор с параметрами, 
+   дабы объект класса при создании сразу связывал себя с рабочим файлом.
+   */
+   Lex_block() = delete;
+
+   /*@brief Конструктор с параметрами
+   * @param Переменная std::string filename, хранящая имя рабочего файла
+   */
+   Lex_block(std::string filename);
+
+
 
    virtual void parse();
 
-   ~Lex_block_mb()
+   void print_lexem_list();
+
+   /*@brief Деструктор, закрывающий файловый поток после удаления объекта класса
+   */
+   ~Lex_block()
    {
       m_file.close();
    }
 
+
 protected:
-   //следующие поля наследуются от класса det_analizer:
-   //std::map<State, std::map<symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
+   //следующие поля наследуются от класса Determ_analizer:
    //std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list; //список лексем анализатора
    //std::map<std::string, double> m_name_table;                       //таблица имён
    //State m_curr_state;                                               //текущее состояние анализатора
-   //inp_symbol m_curr_sym;                                            //текущий входной символ
+   //Input_symbol m_curr_sym;                                            //текущий входной символ
    //std::fstream m_file;                                              //рабочий файловый поток
 
    const size_t m_state_number = 19;
@@ -63,9 +95,9 @@ protected:
    long long int m_reg_nt_pointer;  //Регистр указателя. содержит указатель для лексем PUSH и POP
    size_t m_reg_relation;           //Регистр отношения. хранит информацию о первом символе отношения
    double m_reg_number;             // Регистр числа. используется для вычисления констант
-   size_t m_reg_order;              // Регистр порядка
-   size_t m_reg_counter;            // Регистр счётчика
-   size_t m_reg_is_negative;        // Регистр знака числа
+   int m_reg_order;              // Регистр порядка
+   int m_reg_counter;            // Регистр счётчика
+   int m_reg_sign;        // Регистр знака числа
    size_t m_reg_line_num = 1;       // Номер строки. хранит номер текущей строки в программе.
    std::string m_reg_var_name;      // Регистр переменной. накапливает имя переменной
    size_t m_reg_detection = 0;      //Регистр обнаружения. хранит номер позиции в таблице обнаружения для поиска ключевых слов.
@@ -74,69 +106,100 @@ protected:
    std::map<char, int> m_beg_vector;   // начальный вектор
 
    std::vector<std::tuple<char, int, funct_ptr>> m_detect_table; // таблица обнаружения
-   std::map<State, std::map<symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
+   std::map<State, std::map<Symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
 
 
-   virtual det_analizer::inp_symbol transliterator(int sym);
+   virtual Determ_analizer::Input_symbol transliterator(int sym);
 
 
 private:
 
+   /*
+   * @brief Вычисление константы с помощью соответствующих регистров
+   */
+   void calc_constant();
+
+   /*
+   * @brief Заполнение коллекции возможных лексем
+   */
    void fill_lexems();
 
-   void fill_symbol_lexems();
    /*
-   * @brief добавление константы в коллекцию m_name_table
+   * @brief Заполнение коллекции возможных символьных лексем
+   */
+   void fill_symbol_lexems();
+
+   /*
+   * @brief Добавление константы в коллекцию m_name_table
    */
    void add_constant();
+
    /*
-   * @brief добавление переменной в коллекцию m_name_table
+   * @brief Добавление переменной в коллекцию m_name_table
    */
    void add_variable();
 
+   /*
+   * @brief Создание лексемы и добавление её в список лексем
+   */
    void create_lexem();
 
    /*
-   * @brief метод, заполняющий начальный вектор парами буква-индекс
+   * @brief Метод, заполняющий начальный вектор парами буква-индекс
    */
    void init_beg_vect();
 
    /*
-   * @bried метод, заполняющий таблицу обнаружения тройками буква-переход-альтернатива
+   * @bried Метод, заполняющий таблицу обнаружения тройками буква-переход-альтернатива
    */
    void init_detect_table();
 
+   /*
+   * @brief Заполнение коллекции возможных состояний
+   */
    void init_states();
 
+   /*
+   * @brief Заполнение таблицы переходов соответствующими указателями на функции
+   */
    void init_func_table();
+
+   /*
+   * @brief Таблица отношений
+   * @param Принимает long long int ch - код отношения (цифра от 1 до 6)
+   * @returns Возвращает строку типа const char*, представляющую соотв. отношение
+   */
+   const char* relation_table(long long int ch);
 
    void DA1D();
    void DA2D();
    void DA3D();
    void DA1E();
-   void DA1ECYCLE();
+   //void DA1ECYCLE();
 
    //методы, которыми заполнится таблица
 
-   State e_A1() { return m_collect_of_states["A1"]; }
-   State e_A2() { return m_collect_of_states["A2"]; }
-   State e_A3() { return m_collect_of_states["A3"]; }
-   State e_B1() { return m_collect_of_states["B1"]; }
-   State e_C1() { return m_collect_of_states["C1"]; }
-   State e_C2() { return m_collect_of_states["C2"]; }
-   State e_D1() { return m_collect_of_states["D1"]; }
-   State e_D2() { return m_collect_of_states["D2"]; }
-   State e_D3() { return m_collect_of_states["D3"]; }
-   State e_D4() { return m_collect_of_states["D4"]; }
-   State e_D5() { return m_collect_of_states["D5"]; }
-   State e_D6() { return m_collect_of_states["D6"]; }
-   State e_E1() { return m_collect_of_states["E1"]; }
-   State e_E2() { return m_collect_of_states["E2"]; }
-   State e_F1() { return m_collect_of_states["F1"]; }
-   State e_F2() { return m_collect_of_states["F2"]; }
-   State e_F3() { return m_collect_of_states["F3"]; }
-   State e_G1() { return m_collect_of_states["G1"]; }
-   State e_H1() { return m_collect_of_states["H1"]; }
+   State Error1();
+
+   State e_A1() { return m_collection_of_States["A1"]; }
+   State e_A2() { return m_collection_of_States["A2"]; }
+   State e_A3() { return m_collection_of_States["A3"]; }
+   State e_B1() { return m_collection_of_States["B1"]; }
+   State e_C1() { return m_collection_of_States["C1"]; }
+   State e_C2() { return m_collection_of_States["C2"]; }
+   State e_D1() { return m_collection_of_States["D1"]; }
+   State e_D2() { return m_collection_of_States["D2"]; }
+   State e_D3() { return m_collection_of_States["D3"]; }
+   State e_D4() { return m_collection_of_States["D4"]; }
+   State e_D5() { return m_collection_of_States["D5"]; }
+   State e_D6() { return m_collection_of_States["D6"]; }
+   State e_E1() { return m_collection_of_States["E1"]; }
+   State e_E2() { return m_collection_of_States["E2"]; }
+   State e_F1() { return m_collection_of_States["F1"]; }
+   State e_F2() { return m_collection_of_States["F2"]; }
+   State e_F3() { return m_collection_of_States["F3"]; }
+   State e_G1() { return m_collection_of_States["G1"]; }
+   State e_H1() { return m_collection_of_States["H1"]; }
 
    State A1a();
    State A1b();
