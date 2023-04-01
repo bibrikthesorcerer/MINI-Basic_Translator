@@ -27,7 +27,7 @@ void Lex_block::init_beg_vect()
 
 void Lex_block::init_detect_table()
 {
-   m_detect_table.push_back(std::make_tuple<char, int, funct_ptr>('-', 0, &Lex_block::B1d));// костыль
+   m_detect_table.push_back(std::make_tuple<char, int, funct_ptr>('-', 0, &Lex_block::B1d));// РєРѕСЃС‚С‹Р»СЊ
    m_detect_table.push_back(std::make_tuple<char, int, funct_ptr>('N', 0, &Lex_block::B1d));
    m_detect_table.push_back(std::make_tuple<char, int, funct_ptr>('D', 0, &Lex_block::A2q));
    m_detect_table.push_back(std::make_tuple<char, int, funct_ptr>('O', 0, &Lex_block::B1d));
@@ -493,7 +493,7 @@ State Lex_block::A2p()
          return Error1();
       }
    }
-   else// здесь после одного знака встретили не = а что угодно - это ошибка
+   else// Р·РґРµСЃСЊ РїРѕСЃР»Рµ РѕРґРЅРѕРіРѕ Р·РЅР°РєР° РІСЃС‚СЂРµС‚РёР»Рё РЅРµ = Р° С‡С‚Рѕ СѓРіРѕРґРЅРѕ - СЌС‚Рѕ РѕС€РёР±РєР°
    {
       return Error1();
    }
@@ -840,7 +840,7 @@ State Lex_block::EXIT6()
 }
 
 
-///////////////////////////////-----------------------------------------------------//////////////////////////////////////
+///////////////////////////////--------------------------------------------------//////////////////////////////////////
 
 //alexey
 
