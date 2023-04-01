@@ -82,14 +82,93 @@ void Lex_block_mb::init_func_table()
 {
 }
 
-
-State Lex_block_mb::B1d()
+State Lex_block::F1a()
 {
-   return m_collect_of_states["B1"];
+    m_reg_class = m_collection_of_Lex["lex_let"];
+    return e_F1();
+}
+State Lex_block::F1b()
+{
+    m_reg_class = m_collection_of_Lex["lex_for"];
+    return e_F1();
 }
 
+State Lex_block::F2a()
+{
+    m_reg_var_name = static_cast<char>(m_curr_sym.s_value);
+    return e_F2();
+}
+State Lex_block::F3a()
+{
+    m_reg_var_name += m_curr_sym.s_value + '0';
+    return e_F3();
+}
 
+State Lex_block::M1()
+{
+    if (m_reg_detection == 0)
+        return Error1();
+    if (m_curr_sym.s_value == std::get<0>(m_detect_table[m_reg_detection]))
+    {
+        return (this->*std::get<2>(m_detect_table[m_reg_detection]))();
+    }
+    else
+    {
+        m_reg_detection = std::get<1>(m_detect_table[m_reg_detection]);
+        if (m_reg_detection == 0)
+            return Error1();
+        return M1();
+    }
 
+}
+
+State Lex_block::M2()
+{
+    if (m_curr_sym.s_value != 'e')
+    {
+        DA1D();
+        return B1b();
+    }
+    else
+    {
+        return D3a();
+    }
+}
+
+State Lex_block::M3()
+{
+    if (m_curr_sym.s_value != 'e')
+    {
+        DA1D();
+        return B1b();
+    }
+    else
+    {
+        return e_D3();
+    }
+
+}
+
+State Lex_block::EXIT3()
+{
+    DA1D();
+    return EXIT2();
+}
+State Lex_block::EXIT4()
+{
+    DA2D();
+    return EXIT2();
+}
+State Lex_block::EXIT5()
+{
+    DA3D();
+    return EXIT2();
+}
+State Lex_block::EXIT6()
+{
+    DA1E();
+    return EXIT2();
+}
 
 State Lex_block_mb::E2a()
 {
