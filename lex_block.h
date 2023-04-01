@@ -5,138 +5,201 @@
 #include <string>
 #include <map>
 #include <list>
-#include "det_analizer.h"
+#include "Determ_analizer.h"
 
 
 
-class Lex_block_mb : public det_analizer
+class Lex_block : public Determ_analizer
 {
 public:
-   //enum class symbol_lexem
-   //{
-   //   sl_letter, 
-   //   sl_digit, 
-   //   sl_aur_op, 
-   //   sl_relat,
-   //   sl_op_brace,
-   //   sl_cls_brace,
-   //   sl_dot,
-   //   sl_space,
-   //   sl_lf,
-   //   sl_eof,
-   //   sl_error
-   //};
-   //enum class Lexem {
-   //   lex_line, lex_operand, lex_aur_oper,
-   //   lex_relation, lex_next, lex_let,
-   //   lex_for, lex_goto, lex_gosub,
-   //   lex_op_brace, lex_cls_brace, lex_if, 
-   //   lex_return, lex_end, lex_to,
-   //   lex_step, lex_rem, lex_error,
-   //   lex_eof
-   //};
 
-   Lex_block_mb(std::string filename);
+   /*
+   РЎРёРјРІРѕР»СЊРЅС‹Рµ Р»РµРєСЃРµРјС‹:
+      sl_letter, 
+      sl_digit, 
+      sl_aur_op, 
+      sl_relat,
+      sl_op_brace,
+      sl_cls_brace,
+      sl_dot,
+      sl_space,
+      sl_lf,
+      sl_eof,
+      sl_error
+   
+   Р›РµРєСЃРµРјС‹:
+      lex_line, 
+      lex_operand, 
+      lex_aur_oper,
+      lex_relation, 
+      lex_next, 
+      lex_let,
+      lex_for, 
+      lex_goto, 
+      lex_gosub,
+      lex_op_brace, 
+      lex_cls_brace, 
+      lex_if, 
+      lex_return, 
+      lex_end, 
+      lex_to,
+      lex_step, 
+      lex_rem, 
+      lex_error,
+      lex_eof
+   */
 
-   typedef State(Lex_block_mb::*funct_ptr)();
+   /*РћРїСЂРµРґРµР»РёРј fucnt_ptr - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµС‚РѕРґ РєР»Р°СЃСЃР°.
+   funct_ptr РјРѕР¶РµС‚ РїСЂРёРЅРёРјР°С‚СЊ СѓРєР°Р·Р°С‚РµР»Рё РЅР° РјРµС‚РѕРґС‹ РєР»Р°СЃСЃР°, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРµ СЃР»РµРґСѓСЋС‰РµРјСѓ РїСЂРѕС‚РѕС‚РёРїСѓ:
+   State Lex_block::РРњРЇ_РњР•РўРћР”Рђ ()
+   */
+   typedef State (Lex_block::*funct_ptr)();
+
+
+   /*@brief РЈРґР°Р»РёРј РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Рё РѕСЃС‚Р°РІРёРј Р»РёС€СЊ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё, 
+   РґР°Р±С‹ РѕР±СЉРµРєС‚ РєР»Р°СЃСЃР° РїСЂРё СЃРѕР·РґР°РЅРёРё СЃСЂР°Р·Сѓ СЃРІСЏР·С‹РІР°Р» СЃРµР±СЏ СЃ СЂР°Р±РѕС‡РёРј С„Р°Р№Р»РѕРј.
+   */
+   Lex_block() = delete;
+
+   /*@brief РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
+   * @param РџРµСЂРµРјРµРЅРЅР°СЏ std::string filename, С…СЂР°РЅСЏС‰Р°СЏ РёРјСЏ СЂР°Р±РѕС‡РµРіРѕ С„Р°Р№Р»Р°
+   */
+   Lex_block(std::string filename);
+
+
 
    virtual void parse();
 
-   ~Lex_block_mb()
+   void print_lexem_list();
+
+   /*@brief Р”РµСЃС‚СЂСѓРєС‚РѕСЂ, Р·Р°РєСЂС‹РІР°СЋС‰РёР№ С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР°
+   */
+   ~Lex_block()
    {
       m_file.close();
    }
 
+
 protected:
-   //следующие поля наследуются от класса det_analizer:
-   //std::map<State, std::map<symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
-   //std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list; //список лексем анализатора
-   //std::map<std::string, double> m_name_table;                       //таблица имён
-   //State m_curr_state;                                               //текущее состояние анализатора
-   //inp_symbol m_curr_sym;                                            //текущий входной символ
-   //std::fstream m_file;                                              //рабочий файловый поток
+   //СЃР»РµРґСѓСЋС‰РёРµ РїРѕР»СЏ РЅР°СЃР»РµРґСѓСЋС‚СЃСЏ РѕС‚ РєР»Р°СЃСЃР° Determ_analizer:
+   //std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list; //СЃРїРёСЃРѕРє Р»РµРєСЃРµРј Р°РЅР°Р»РёР·Р°С‚РѕСЂР°
+   //std::map<std::string, double> m_name_table;                       //С‚Р°Р±Р»РёС†Р° РёРјС‘РЅ
+   //State m_curr_state;                                               //С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РЅР°Р»РёР·Р°С‚РѕСЂР°
+   //Input_symbol m_curr_sym;                                            //С‚РµРєСѓС‰РёР№ РІС…РѕРґРЅРѕР№ СЃРёРјРІРѕР»
+   //std::fstream m_file;                                              //СЂР°Р±РѕС‡РёР№ С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє
 
    const size_t m_state_number = 19;
    const size_t m_class_number = 10;
 
-   Lexem m_reg_class;               //Регистр класса. служит для хранения класса лексемы
-   long long int m_reg_nt_pointer;  //Регистр указателя. содержит указатель для лексем PUSH и POP
-   size_t m_reg_relation;           //Регистр отношения. хранит информацию о первом символе отношения
-   double m_reg_number;             // Регистр числа. используется для вычисления констант
-   size_t m_reg_order;              // Регистр порядка
-   size_t m_reg_counter;            // Регистр счётчика
-   size_t m_reg_is_negative;        // Регистр знака числа
-   size_t m_reg_line_num = 1;       // Номер строки. хранит номер текущей строки в программе.
-   std::string m_reg_var_name;      // Регистр переменной. накапливает имя переменной
-   size_t m_reg_detection = 0;      //Регистр обнаружения. хранит номер позиции в таблице обнаружения для поиска ключевых слов.
-   size_t m_reg_value;              // Регистр значения. хранит значения лексем
+   Lexem m_reg_class;               //Р РµРіРёСЃС‚СЂ РєР»Р°СЃСЃР°. СЃР»СѓР¶РёС‚ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РєР»Р°СЃСЃР° Р»РµРєСЃРµРјС‹
+   long long int m_reg_nt_pointer;  //Р РµРіРёСЃС‚СЂ СѓРєР°Р·Р°С‚РµР»СЏ. СЃРѕРґРµСЂР¶РёС‚ СѓРєР°Р·Р°С‚РµР»СЊ РґР»СЏ Р»РµРєСЃРµРј PUSH Рё POP
+   size_t m_reg_relation;           //Р РµРіРёСЃС‚СЂ РѕС‚РЅРѕС€РµРЅРёСЏ. С…СЂР°РЅРёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРµСЂРІРѕРј СЃРёРјРІРѕР»Рµ РѕС‚РЅРѕС€РµРЅРёСЏ
+   double m_reg_number;             // Р РµРіРёСЃС‚СЂ С‡РёСЃР»Р°. РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ РєРѕРЅСЃС‚Р°РЅС‚
+   int m_reg_order;              // Р РµРіРёСЃС‚СЂ РїРѕСЂСЏРґРєР°
+   int m_reg_counter;            // Р РµРіРёСЃС‚СЂ СЃС‡С‘С‚С‡РёРєР°
+   int m_reg_sign;        // Р РµРіРёСЃС‚СЂ Р·РЅР°РєР° С‡РёСЃР»Р°
+   size_t m_reg_line_num = 1;       // РќРѕРјРµСЂ СЃС‚СЂРѕРєРё. С…СЂР°РЅРёС‚ РЅРѕРјРµСЂ С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРё РІ РїСЂРѕРіСЂР°РјРјРµ.
+   std::string m_reg_var_name;      // Р РµРіРёСЃС‚СЂ РїРµСЂРµРјРµРЅРЅРѕР№. РЅР°РєР°РїР»РёРІР°РµС‚ РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
+   size_t m_reg_detection = 0;      //Р РµРіРёСЃС‚СЂ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ. С…СЂР°РЅРёС‚ РЅРѕРјРµСЂ РїРѕР·РёС†РёРё РІ С‚Р°Р±Р»РёС†Рµ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ РґР»СЏ РїРѕРёСЃРєР° РєР»СЋС‡РµРІС‹С… СЃР»РѕРІ.
+   size_t m_reg_value;              // Р РµРіРёСЃС‚СЂ Р·РЅР°С‡РµРЅРёСЏ. С…СЂР°РЅРёС‚ Р·РЅР°С‡РµРЅРёСЏ Р»РµРєСЃРµРј
 
-   std::map<char, int> m_beg_vector;   // начальный вектор
+   std::map<char, int> m_beg_vector;   // РЅР°С‡Р°Р»СЊРЅС‹Р№ РІРµРєС‚РѕСЂ
 
-   std::vector<std::tuple<char, int, funct_ptr>> m_detect_table; // таблица обнаружения
-   std::map<State, std::map<symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
+   std::vector<std::tuple<char, int, funct_ptr>> m_detect_table; // С‚Р°Р±Р»РёС†Р° РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ
+   std::map<State, std::map<Symbol_lexem, funct_ptr>> m_func_table;    //С‚Р°Р±Р»РёС†Р° РїРµСЂРµС…РѕРґРѕРІ Р°РЅР°Р»РёР·Р°С‚РѕСЂР°
 
 
-   virtual det_analizer::inp_symbol transliterator(int sym);
+   virtual Determ_analizer::Input_symbol transliterator(int sym);
 
 
 private:
 
+   /*
+   * @brief Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹ СЃ РїРѕРјРѕС‰СЊСЋ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… СЂРµРіРёСЃС‚СЂРѕРІ
+   */
+   void calc_constant();
+
+   /*
+   * @brief Р—Р°РїРѕР»РЅРµРЅРёРµ РєРѕР»Р»РµРєС†РёРё РІРѕР·РјРѕР¶РЅС‹С… Р»РµРєСЃРµРј
+   */
    void fill_lexems();
 
-   void fill_symbol_lexems();
    /*
-   * @brief добавление константы в коллекцию m_name_table
+   * @brief Р—Р°РїРѕР»РЅРµРЅРёРµ РєРѕР»Р»РµРєС†РёРё РІРѕР·РјРѕР¶РЅС‹С… СЃРёРјРІРѕР»СЊРЅС‹С… Р»РµРєСЃРµРј
+   */
+   void fill_symbol_lexems();
+
+   /*
+   * @brief Р”РѕР±Р°РІР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹ РІ РєРѕР»Р»РµРєС†РёСЋ m_name_table
    */
    void add_constant();
+
    /*
-   * @brief добавление переменной в коллекцию m_name_table
+   * @brief Р”РѕР±Р°РІР»РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ РІ РєРѕР»Р»РµРєС†РёСЋ m_name_table
    */
    void add_variable();
 
+   /*
+   * @brief РЎРѕР·РґР°РЅРёРµ Р»РµРєСЃРµРјС‹ Рё РґРѕР±Р°РІР»РµРЅРёРµ РµС‘ РІ СЃРїРёСЃРѕРє Р»РµРєСЃРµРј
+   */
    void create_lexem();
 
    /*
-   * @brief метод, заполняющий начальный вектор парами буква-индекс
+   * @brief РњРµС‚РѕРґ, Р·Р°РїРѕР»РЅСЏСЋС‰РёР№ РЅР°С‡Р°Р»СЊРЅС‹Р№ РІРµРєС‚РѕСЂ РїР°СЂР°РјРё Р±СѓРєРІР°-РёРЅРґРµРєСЃ
    */
    void init_beg_vect();
 
    /*
-   * @bried метод, заполняющий таблицу обнаружения тройками буква-переход-альтернатива
+   * @bried РњРµС‚РѕРґ, Р·Р°РїРѕР»РЅСЏСЋС‰РёР№ С‚Р°Р±Р»РёС†Сѓ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ С‚СЂРѕР№РєР°РјРё Р±СѓРєРІР°-РїРµСЂРµС…РѕРґ-Р°Р»СЊС‚РµСЂРЅР°С‚РёРІР°
    */
    void init_detect_table();
 
+   /*
+   * @brief Р—Р°РїРѕР»РЅРµРЅРёРµ РєРѕР»Р»РµРєС†РёРё РІРѕР·РјРѕР¶РЅС‹С… СЃРѕСЃС‚РѕСЏРЅРёР№
+   */
    void init_states();
 
+   /*
+   * @brief Р—Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРµСЂРµС…РѕРґРѕРІ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРјРё СѓРєР°Р·Р°С‚РµР»СЏРјРё РЅР° РјРµС‚РѕРґС‹
+   */
    void init_func_table();
+
+   /*
+   * @brief РўР°Р±Р»РёС†Р° РѕС‚РЅРѕС€РµРЅРёР№
+   * @param РџСЂРёРЅРёРјР°РµС‚ long long int ch - РєРѕРґ РѕС‚РЅРѕС€РµРЅРёСЏ (С†РёС„СЂР° РѕС‚ 1 РґРѕ 6)
+   * @returns Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ С‚РёРїР° const char*, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰СѓСЋ СЃРѕРѕС‚РІ. РѕС‚РЅРѕС€РµРЅРёРµ
+   */
+   const char* relation_table(long long int ch);
 
    void DA1D();
    void DA2D();
    void DA3D();
    void DA1E();
-   void DA1ECYCLE();
+   //void DA1ECYCLE();
 
-   //методы, которыми заполнится таблица
+   //РјРµС‚РѕРґС‹, РєРѕС‚РѕСЂС‹РјРё Р·Р°РїРѕР»РЅРёС‚СЃСЏ С‚Р°Р±Р»РёС†Р°
 
-   State e_A1() { return m_collect_of_states["A1"]; }
-   State e_A2() { return m_collect_of_states["A2"]; }
-   State e_A3() { return m_collect_of_states["A3"]; }
-   State e_B1() { return m_collect_of_states["B1"]; }
-   State e_C1() { return m_collect_of_states["C1"]; }
-   State e_C2() { return m_collect_of_states["C2"]; }
-   State e_D1() { return m_collect_of_states["D1"]; }
-   State e_D2() { return m_collect_of_states["D2"]; }
-   State e_D3() { return m_collect_of_states["D3"]; }
-   State e_D4() { return m_collect_of_states["D4"]; }
-   State e_D5() { return m_collect_of_states["D5"]; }
-   State e_D6() { return m_collect_of_states["D6"]; }
-   State e_E1() { return m_collect_of_states["E1"]; }
-   State e_E2() { return m_collect_of_states["E2"]; }
-   State e_F1() { return m_collect_of_states["F1"]; }
-   State e_F2() { return m_collect_of_states["F2"]; }
-   State e_F3() { return m_collect_of_states["F3"]; }
-   State e_G1() { return m_collect_of_states["G1"]; }
-   State e_H1() { return m_collect_of_states["H1"]; }
+   State Error1();
+
+   State e_A1() { return m_collection_of_States["A1"]; }
+   State e_A2() { return m_collection_of_States["A2"]; }
+   State e_A3() { return m_collection_of_States["A3"]; }
+   State e_B1() { return m_collection_of_States["B1"]; }
+   State e_C1() { return m_collection_of_States["C1"]; }
+   State e_C2() { return m_collection_of_States["C2"]; }
+   State e_D1() { return m_collection_of_States["D1"]; }
+   State e_D2() { return m_collection_of_States["D2"]; }
+   State e_D3() { return m_collection_of_States["D3"]; }
+   State e_D4() { return m_collection_of_States["D4"]; }
+   State e_D5() { return m_collection_of_States["D5"]; }
+   State e_D6() { return m_collection_of_States["D6"]; }
+   State e_E1() { return m_collection_of_States["E1"]; }
+   State e_E2() { return m_collection_of_States["E2"]; }
+   State e_F1() { return m_collection_of_States["F1"]; }
+   State e_F2() { return m_collection_of_States["F2"]; }
+   State e_F3() { return m_collection_of_States["F3"]; }
+   State e_G1() { return m_collection_of_States["G1"]; }
+   State e_H1() { return m_collection_of_States["H1"]; }
 
    State A1a();
    State A1b();

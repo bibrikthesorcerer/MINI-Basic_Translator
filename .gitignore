@@ -39,3 +39,5 @@ FSA.cpp
 *.exe
 *.out
 *.app
+det_analizer.h
+det_analizer.cpp
