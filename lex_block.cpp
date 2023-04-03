@@ -474,6 +474,7 @@ State Lex_block::A2g()
 
 State Lex_block::A2p()
 {
+
    if (m_curr_sym.s_value == '=')
    {
       if (m_reg_relation == '!')
@@ -489,7 +490,7 @@ State Lex_block::A2p()
          m_reg_relation = 6;
       }
       else
-      {
+      {   
          return Error1();
       }
    }
@@ -791,7 +792,7 @@ State Lex_block::M1()
 
 State Lex_block::M2()
 {
-    if (m_curr_sym.s_value != 'e')
+    if (m_curr_sym.s_value != 'E')
     {
         DA1D();
         return B1b();
@@ -804,7 +805,7 @@ State Lex_block::M2()
 
 State Lex_block::M3()
 {
-    if (m_curr_sym.s_value != 'e')
+    if (m_curr_sym.s_value != 'E')
     {
         DA1D();
         return B1b();
@@ -999,17 +1000,21 @@ void Lex_block::DA3D()
 
 State Lex_block::Error1()
 {
-   while (m_curr_sym.s_class.m_id != 9 && m_curr_sym.s_class.m_id != 8)
-   {
-      m_curr_sym = transliterator(m_file.get());
-   }
+   m_curr_sym = transliterator(m_file.get());
+
    m_reg_class = m_collection_of_Lex["lex_error"];
    create_lexem();
    if (m_curr_sym.s_class.m_id == 9) // eof
    {
       return EXIT1();
    }
-   return m_collection_of_States["A1"];
+
+   if (m_curr_sym.s_class.m_id == 8)
+   {
+      return m_collection_of_States["A1"];
+   }
+
+   return m_curr_state;
 }
 
 void Lex_block::fill_lexems()
