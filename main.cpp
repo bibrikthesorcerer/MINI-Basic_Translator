@@ -20,7 +20,7 @@
 
 int main()
 {
-   Lex_block ADAM("input.txt");
+   Lex_block ADAM("D:/Github/MINI-BASIC_Translator/input.txt");
    ADAM.parse();
    ADAM.print_lexem_list();
    return 0;

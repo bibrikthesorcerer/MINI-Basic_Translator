@@ -209,6 +209,7 @@ void Lex_block::init_func_table()
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_dot"       ]] = &Lex_block::e_G1;
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_lf"        ]] = &Lex_block::e_A1;
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_eof"       ]] = &Lex_block::EXIT1;
+   (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_error"     ]] = &Lex_block::e_G1;
 
    (m_func_table[m_collection_of_States["H1"]])[m_collection_of_Symlex["sl_letter"    ]] = &Lex_block::C2b;
    (m_func_table[m_collection_of_States["H1"]])[m_collection_of_Symlex["sl_digit"     ]] = &Lex_block::D1c;
@@ -465,6 +466,8 @@ State Lex_block::A2g()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -477,15 +480,15 @@ State Lex_block::A2p()
 
    if (m_curr_sym.s_value == '=')
    {
-      if (m_reg_relation == '!')
+      if (m_reg_relation == 2)
       {
-         m_reg_relation = 2;
+         //ничего делать не надо, присвоен уже корректный код
       }
-      else if (m_reg_relation == '<')
+      else if (m_reg_relation == 3)
       {
          m_reg_relation = 5;
       }
-      else if (m_reg_relation == '>')
+      else if (m_reg_relation == 4)
       {
          m_reg_relation = 6;
       }
@@ -508,6 +511,8 @@ State Lex_block::A2k()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -523,6 +528,8 @@ State Lex_block::A3c()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -546,6 +553,8 @@ State Lex_block::A1a()
 
 State Lex_block::EXIT2()
 {
+   if (m_reg_var_name != "")
+      add_variable();
    create_lexem();
    return EXIT1();
 }
@@ -576,6 +585,8 @@ State Lex_block::H1a()
    m_reg_class = m_collection_of_Lex["lex_relation"];
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -588,6 +599,8 @@ State Lex_block::H1d()
    DA2D();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -600,6 +613,8 @@ State Lex_block::H1e()
    DA3D();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -653,7 +668,8 @@ State Lex_block::E2c()
 
 State Lex_block::D1c()
 {
-   create_lexem();
+   if (m_reg_class.m_id != 17)
+      create_lexem();
    return D1a();
 }
 
@@ -736,6 +752,8 @@ State Lex_block::D6a()
 {
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -1000,20 +1018,36 @@ void Lex_block::DA3D()
 
 State Lex_block::Error1()
 {
-   m_curr_sym = transliterator(m_file.get());
+   if(m_reg_class.m_id != 17 )//error
+   {
+      m_reg_class = m_collection_of_Lex["lex_error"];
+      create_lexem();
+   }
 
-   m_reg_class = m_collection_of_Lex["lex_error"];
-   create_lexem();
+   // если ошибка произошла на цифре или букве, то пропустим последующие цифры и\или буквы
+   if (m_curr_sym.s_class.m_id == 0 || m_curr_sym.s_class.m_id == 1)
+   {
+      while (m_curr_sym.s_class.m_id == 0 || m_curr_sym.s_class.m_id == 1)
+      {
+         m_curr_sym = transliterator(m_file.get());
+      }
+   }
+
+   if (m_curr_sym.s_class.m_id == 10)//error
+   {
+      while (m_curr_sym.s_class.m_id == 10)
+      {
+         m_curr_sym = transliterator(m_file.get());
+      }
+   }
    if (m_curr_sym.s_class.m_id == 9) // eof
    {
       return EXIT1();
    }
-
-   if (m_curr_sym.s_class.m_id == 8)
+   else if (m_curr_sym.s_class.m_id == 8) // lf
    {
       return m_collection_of_States["A1"];
    }
-
    return m_curr_state;
 }
 
@@ -1043,17 +1077,17 @@ void Lex_block::fill_lexems()
 
 void Lex_block::fill_symbol_lexems()
 {
-   m_collection_of_Symlex["sl_letter"]      = Symbol_lexem("sl_letter",  0);
-   m_collection_of_Symlex["sl_digit"]       = Symbol_lexem("sl_digit",  1);
-   m_collection_of_Symlex["sl_aur_op"]      = Symbol_lexem("sl_aur_op",  2);
-   m_collection_of_Symlex["sl_relat"]       = Symbol_lexem("sl_relat",  3);
+   m_collection_of_Symlex["sl_letter"]      = Symbol_lexem("sl_letter",    0);
+   m_collection_of_Symlex["sl_digit"]       = Symbol_lexem("sl_digit",     1);
+   m_collection_of_Symlex["sl_aur_op"]      = Symbol_lexem("sl_aur_op",    2);
+   m_collection_of_Symlex["sl_relat"]       = Symbol_lexem("sl_relat",     3);
    m_collection_of_Symlex["sl_op_brace"]    = Symbol_lexem("sl_op_brace",  4);
-   m_collection_of_Symlex["sl_cls_brace"]   = Symbol_lexem("sl_cls_brace",  5);
-   m_collection_of_Symlex["sl_dot"]         = Symbol_lexem("sl_dot",  6);
-   m_collection_of_Symlex["sl_space"]       = Symbol_lexem("sl_space",  7);
-   m_collection_of_Symlex["sl_lf"]          = Symbol_lexem("sl_lf",  8);
-   m_collection_of_Symlex["sl_eof"]         = Symbol_lexem("sl_eof",  9);
-   m_collection_of_Symlex["sl_error"]       = Symbol_lexem("sl_error", 10);
+   m_collection_of_Symlex["sl_cls_brace"]   = Symbol_lexem("sl_cls_brace", 5);
+   m_collection_of_Symlex["sl_dot"]         = Symbol_lexem("sl_dot",       6);
+   m_collection_of_Symlex["sl_space"]       = Symbol_lexem("sl_space",     7);
+   m_collection_of_Symlex["sl_lf"]          = Symbol_lexem("sl_lf",        8);
+   m_collection_of_Symlex["sl_eof"]         = Symbol_lexem("sl_eof",       9);
+   m_collection_of_Symlex["sl_error"]       = Symbol_lexem("sl_error",     10);
 }
 
 void Lex_block::calc_constant()
@@ -1154,7 +1188,7 @@ Determ_analizer::Input_symbol Lex_block::transliterator(int sym)
       symbol.s_class = m_collection_of_Symlex["sl_digit"];
       symbol.s_value = sym - '0';
    }
-   else if ((sym > 64 && sym < 91) || (sym > 96 && sym < 123))
+   else if ((sym > 64 && sym < 91))
    {
       symbol.s_class = m_collection_of_Symlex["sl_letter"];
       symbol.s_value = sym;
