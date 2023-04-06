@@ -859,6 +859,7 @@ State Lex_block::EXIT6()
 void Lex_block::DA1E()
 { 
    m_reg_value = m_reg_line_num;
+
 }
 
 void Lex_block::print_lexem_list()
@@ -904,12 +905,12 @@ void Lex_block::print_lexem_list()
       }
       case 7: //goto
       {
-         std::cout << "GOTO " << (std::get<1>(*it)) << " ";
+         std::cout << "GOTO " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it)))))<< " ";
          break;
       }
       case 8: //gosub
       {
-         std::cout << "GOSUB " << (std::get<1>(*it)) << " ";
+         std::cout << "GOSUB " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it))))) << " ";
          break;
       }
       case 9:// (
@@ -1152,7 +1153,35 @@ void Lex_block::add_variable()
 
 void Lex_block::create_lexem()
 {
-   if(m_reg_class.m_id == 0 /*line*/ || m_reg_class.m_id == 2 /*aur oper*/ || m_reg_class.m_id == 7 /*goto*/ || m_reg_class.m_id == 8 /*gosub*/)
+   if (m_reg_class.m_id == 0 /*line*/)
+   {
+      //если мы добавляем строку в код, но она уже содержится, то....
+      if (m_collection_of_lines.contains(m_reg_line_num))
+      {
+         Error1();
+         return;
+         //m_reg_class = m_collection_of_Lex["lex_error"];
+         //create_lexem();
+      }
+      else
+      {
+         m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_lines[m_reg_line_num]);
+      }
+      std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_nt_pointer, m_reg_line_num);
+      m_lexem_list.push_back(tup);
+
+      //в коллекции запись с номером строки теперь указывает на свою же лексему в списке лексем
+      auto it = &(*(--m_lexem_list.end()));
+      m_collection_of_lines[m_reg_line_num] = reinterpret_cast<long long int>(it);
+   }
+   if (m_reg_class.m_id == 7 /*goto*/ || m_reg_class.m_id == 8 /*gosub*/)
+   {
+      m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_lines[m_reg_line_num]);
+      std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_nt_pointer, m_reg_line_num);
+      m_lexem_list.push_back(tup);
+   }
+
+   if(m_reg_class.m_id == 2 /*aur oper*/)
    {
       std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_value, m_reg_line_num);
       m_lexem_list.push_back(tup);
