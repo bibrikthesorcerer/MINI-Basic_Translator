@@ -1,0 +1,28 @@
+10 REM String-handling program
+20 REM Inputs a name, tests for validity
+
+70 LET F = 0
+70 LET F1 = 0
+70 LET P3 = 0
+70 LET 3P = 0
+
+80 FOR I = 1 TO (N)
+80 FOR I = 1 TO (N2)
+
+260 LET O1 = W1
+210 IF N1 = "" 280
+
+1010 IF (C1 >= 94) THEN 140
+1020 LET F2 = 1
+
+310 NEXT I 
+330 GOTO 3000
+
+240 LET N = N + 1
+290 FOR I = 1 TO N
+
+190 LET R1 = 210
+
+280 REM Print out the name
+290 FOR I = 1 TO N
+310 NEXT I 
