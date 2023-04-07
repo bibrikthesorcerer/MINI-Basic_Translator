@@ -1,0 +1,13 @@
+1 REM im going to kill myself
+2 REM A1 + = ( ) .
+13 LET F 1 = 7 / - (63 < > 9)) = * < (
+14 LET G = - 3 TO .65 + .01 = .1) + .8( .6
+20 F OR I = .3 E 6 8 STEP . 3e + 6 = 1.3e - 1) (1.3e-9
+23 IF  10 E6 + 3e1 (1E1 GOTO 1 2 = H I >
+40 NEXT E3
+42 + A ^ B ( C ) 2 ( D
+45 GOSUB 1)GOTO 6
+50 ( 9
+52 ) . 6 RETURN )END  > = < = < )
+ 60 7
+54 =J0+K1+L2+m3+N4+o5+p6+Q7+R8+s9+T+U+V+w+X+Y+z

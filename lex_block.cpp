@@ -209,6 +209,7 @@ void Lex_block::init_func_table()
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_dot"       ]] = &Lex_block::e_G1;
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_lf"        ]] = &Lex_block::e_A1;
    (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_eof"       ]] = &Lex_block::EXIT1;
+   (m_func_table[m_collection_of_States["G1"]])[m_collection_of_Symlex["sl_error"     ]] = &Lex_block::e_G1;
 
    (m_func_table[m_collection_of_States["H1"]])[m_collection_of_Symlex["sl_letter"    ]] = &Lex_block::C2b;
    (m_func_table[m_collection_of_States["H1"]])[m_collection_of_Symlex["sl_digit"     ]] = &Lex_block::D1c;
@@ -465,6 +466,8 @@ State Lex_block::A2g()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -474,22 +477,23 @@ State Lex_block::A2g()
 
 State Lex_block::A2p()
 {
+
    if (m_curr_sym.s_value == '=')
    {
-      if (m_reg_relation == '!')
+      if (m_reg_relation == 2)
       {
-         m_reg_relation = 2;
+         //ничего делать не надо, присвоен уже корректный код
       }
-      else if (m_reg_relation == '<')
+      else if (m_reg_relation == 3)
       {
          m_reg_relation = 5;
       }
-      else if (m_reg_relation == '>')
+      else if (m_reg_relation == 4)
       {
          m_reg_relation = 6;
       }
       else
-      {
+      {   
          return Error1();
       }
    }
@@ -507,6 +511,8 @@ State Lex_block::A2k()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -522,6 +528,8 @@ State Lex_block::A3c()
    create_lexem();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -545,6 +553,8 @@ State Lex_block::A1a()
 
 State Lex_block::EXIT2()
 {
+   if (m_reg_var_name != "")
+      add_variable();
    create_lexem();
    return EXIT1();
 }
@@ -575,6 +585,8 @@ State Lex_block::H1a()
    m_reg_class = m_collection_of_Lex["lex_relation"];
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -587,6 +599,8 @@ State Lex_block::H1d()
    DA2D();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -599,6 +613,8 @@ State Lex_block::H1e()
    DA3D();
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -652,7 +668,8 @@ State Lex_block::E2c()
 
 State Lex_block::D1c()
 {
-   create_lexem();
+   if (m_reg_class.m_id != 17)
+      create_lexem();
    return D1a();
 }
 
@@ -735,6 +752,8 @@ State Lex_block::D6a()
 {
    if (m_curr_sym.s_value == '=')
       m_reg_relation = 1;
+   else if (m_curr_sym.s_value == '!')
+      m_reg_relation = 2;
    else if (m_curr_sym.s_value == '<')
       m_reg_relation = 3;
    else if (m_curr_sym.s_value == '>')
@@ -749,104 +768,98 @@ State Lex_block::B1e()
    return B1b();
 }
 
-///////////////////////////////-----------------------------------------------------//////////////////////////////////////
 State Lex_block::F1a()
 {
-   m_reg_class = m_collection_of_Lex["lex_let"];
-   return e_F1();
+    m_reg_class = m_collection_of_Lex["lex_let"];
+    return e_F1();
 }
 State Lex_block::F1b()
 {
-   m_reg_class = m_collection_of_Lex["lex_for"];
-   return e_F1();
+    m_reg_class = m_collection_of_Lex["lex_for"];
+    return e_F1();
 }
 
 State Lex_block::F2a()
 {
-   m_reg_var_name = static_cast<char>(m_curr_sym.s_value);
-   return e_F2();
+    m_reg_var_name = static_cast<char>(m_curr_sym.s_value);
+    return e_F2();
 }
 State Lex_block::F3a()
 {
-   m_reg_var_name += m_curr_sym.s_value + '0';
-   return e_F3();
+    m_reg_var_name += m_curr_sym.s_value + '0';
+    return e_F3();
 }
 
 State Lex_block::M1()
 {
-   if (m_reg_detection == 0)
-      return Error1();
-   if (m_curr_sym.s_value == std::get<0>(m_detect_table[m_reg_detection]))
-   {
-      return (this->*std::get<2>(m_detect_table[m_reg_detection]))();
-   }
-   else
-   {
-      m_reg_detection = std::get<1>(m_detect_table[m_reg_detection]);
-      if (m_reg_detection == 0)
-         return Error1();
-      return M1();
-   }
+    if (m_reg_detection == 0)
+        return Error1();
+    if (m_curr_sym.s_value == std::get<0>(m_detect_table[m_reg_detection]))
+    {
+        return (this->*std::get<2>(m_detect_table[m_reg_detection]))();
+    }
+    else
+    {
+        m_reg_detection = std::get<1>(m_detect_table[m_reg_detection]);
+        if (m_reg_detection == 0)
+            return Error1();
+        return M1();
+    }
 
 }
 
 State Lex_block::M2()
 {
-   if (m_curr_sym.s_value != 'e')
-   {
-      DA1D();
-      return B1b();
-   }
-   else
-   {
-      return D3a();
-   }
+    if (m_curr_sym.s_value != 'E')
+    {
+        DA1D();
+        return B1b();
+    }
+    else
+    {
+        return D3a();
+    }
 }
 
 State Lex_block::M3()
 {
-   if (m_curr_sym.s_value != 'e')
-   {
-      DA1D();
-      return B1b();
-   }
-   else
-   {
-      return e_D3();
-   }
+    if (m_curr_sym.s_value != 'E')
+    {
+        DA1D();
+        return B1b();
+    }
+    else
+    {
+        return e_D3();
+    }
 
 }
-
 
 State Lex_block::EXIT3()
 {
-   DA1D();
-   return EXIT2();
+    DA1D();
+    return EXIT2();
 }
 State Lex_block::EXIT4()
 {
-   DA2D();
-   return EXIT2();
+    DA2D();
+    return EXIT2();
 }
 State Lex_block::EXIT5()
 {
-   DA3D();
-   return EXIT2();
+    DA3D();
+    return EXIT2();
 }
 State Lex_block::EXIT6()
 {
-   DA1E(); 
-   return EXIT2();
+    DA1E();
+    return EXIT2();
 }
-
-
-///////////////////////////////--------------------------------------------------//////////////////////////////////////
-
-//alexey
 
 void Lex_block::DA1E()
 { 
    m_reg_value = m_reg_line_num;
+
 }
 
 void Lex_block::print_lexem_list()
@@ -892,12 +905,12 @@ void Lex_block::print_lexem_list()
       }
       case 7: //goto
       {
-         std::cout << "GOTO " << (std::get<1>(*it)) << " ";
+         std::cout << "GOTO " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it)))))<< " ";
          break;
       }
       case 8: //gosub
       {
-         std::cout << "GOSUB " << (std::get<1>(*it)) << " ";
+         std::cout << "GOSUB " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it))))) << " ";
          break;
       }
       case 9:// (
@@ -1006,17 +1019,37 @@ void Lex_block::DA3D()
 
 State Lex_block::Error1()
 {
-   while (m_curr_sym.s_class.m_id != 9 && m_curr_sym.s_class.m_id != 8)
+   if(m_reg_class.m_id != 17 )//error
    {
-      m_curr_sym = transliterator(m_file.get());
+      m_reg_class = m_collection_of_Lex["lex_error"];
+      create_lexem();
    }
-   m_reg_class = m_collection_of_Lex["lex_error"];
-   create_lexem();
+
+   // если ошибка произошла на цифре или букве, то пропустим последующие цифры и\или буквы
+   if (m_curr_sym.s_class.m_id == 0 || m_curr_sym.s_class.m_id == 1)
+   {
+      while (m_curr_sym.s_class.m_id == 0 || m_curr_sym.s_class.m_id == 1)
+      {
+         m_curr_sym = transliterator(m_file.get());
+      }
+   }
+
+   if (m_curr_sym.s_class.m_id == 10)//error
+   {
+      while (m_curr_sym.s_class.m_id == 10)
+      {
+         m_curr_sym = transliterator(m_file.get());
+      }
+   }
    if (m_curr_sym.s_class.m_id == 9) // eof
    {
       return EXIT1();
    }
-   return m_collection_of_States["A1"];
+   else if (m_curr_sym.s_class.m_id == 8) // lf
+   {
+      return m_collection_of_States["A1"];
+   }
+   return m_curr_state;
 }
 
 void Lex_block::fill_lexems()
@@ -1045,17 +1078,17 @@ void Lex_block::fill_lexems()
 
 void Lex_block::fill_symbol_lexems()
 {
-   m_collection_of_Symlex["sl_letter"]      = Symbol_lexem("sl_letter",  0);
-   m_collection_of_Symlex["sl_digit"]       = Symbol_lexem("sl_digit",  1);
-   m_collection_of_Symlex["sl_aur_op"]      = Symbol_lexem("sl_aur_op",  2);
-   m_collection_of_Symlex["sl_relat"]       = Symbol_lexem("sl_relat",  3);
+   m_collection_of_Symlex["sl_letter"]      = Symbol_lexem("sl_letter",    0);
+   m_collection_of_Symlex["sl_digit"]       = Symbol_lexem("sl_digit",     1);
+   m_collection_of_Symlex["sl_aur_op"]      = Symbol_lexem("sl_aur_op",    2);
+   m_collection_of_Symlex["sl_relat"]       = Symbol_lexem("sl_relat",     3);
    m_collection_of_Symlex["sl_op_brace"]    = Symbol_lexem("sl_op_brace",  4);
-   m_collection_of_Symlex["sl_cls_brace"]   = Symbol_lexem("sl_cls_brace",  5);
-   m_collection_of_Symlex["sl_dot"]         = Symbol_lexem("sl_dot",  6);
-   m_collection_of_Symlex["sl_space"]       = Symbol_lexem("sl_space",  7);
-   m_collection_of_Symlex["sl_lf"]          = Symbol_lexem("sl_lf",  8);
-   m_collection_of_Symlex["sl_eof"]         = Symbol_lexem("sl_eof",  9);
-   m_collection_of_Symlex["sl_error"]       = Symbol_lexem("sl_error", 10);
+   m_collection_of_Symlex["sl_cls_brace"]   = Symbol_lexem("sl_cls_brace", 5);
+   m_collection_of_Symlex["sl_dot"]         = Symbol_lexem("sl_dot",       6);
+   m_collection_of_Symlex["sl_space"]       = Symbol_lexem("sl_space",     7);
+   m_collection_of_Symlex["sl_lf"]          = Symbol_lexem("sl_lf",        8);
+   m_collection_of_Symlex["sl_eof"]         = Symbol_lexem("sl_eof",       9);
+   m_collection_of_Symlex["sl_error"]       = Symbol_lexem("sl_error",     10);
 }
 
 void Lex_block::calc_constant()
@@ -1120,7 +1153,35 @@ void Lex_block::add_variable()
 
 void Lex_block::create_lexem()
 {
-   if(m_reg_class.m_id == 0 /*line*/ || m_reg_class.m_id == 2 /*aur oper*/ || m_reg_class.m_id == 7 /*goto*/ || m_reg_class.m_id == 8 /*gosub*/)
+   if (m_reg_class.m_id == 0 /*line*/)
+   {
+      //если мы добавляем строку в код, но она уже содержится, то....
+      if (m_collection_of_lines.contains(m_reg_line_num))
+      {
+         Error1();
+         return;
+         //m_reg_class = m_collection_of_Lex["lex_error"];
+         //create_lexem();
+      }
+      else
+      {
+         m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_lines[m_reg_line_num]);
+      }
+      std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_nt_pointer, m_reg_line_num);
+      m_lexem_list.push_back(tup);
+
+      //в коллекции запись с номером строки теперь указывает на свою же лексему в списке лексем
+      auto it = &(*(--m_lexem_list.end()));
+      m_collection_of_lines[m_reg_line_num] = reinterpret_cast<long long int>(it);
+   }
+   if (m_reg_class.m_id == 7 /*goto*/ || m_reg_class.m_id == 8 /*gosub*/)
+   {
+      m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_lines[m_reg_line_num]);
+      std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_nt_pointer, m_reg_line_num);
+      m_lexem_list.push_back(tup);
+   }
+
+   if(m_reg_class.m_id == 2 /*aur oper*/)
    {
       std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_value, m_reg_line_num);
       m_lexem_list.push_back(tup);
@@ -1156,7 +1217,7 @@ Determ_analizer::Input_symbol Lex_block::transliterator(int sym)
       symbol.s_class = m_collection_of_Symlex["sl_digit"];
       symbol.s_value = sym - '0';
    }
-   else if ((sym > 64 && sym < 91) || (sym > 96 && sym < 123))
+   else if ((sym > 64 && sym < 91))
    {
       symbol.s_class = m_collection_of_Symlex["sl_letter"];
       symbol.s_value = sym;

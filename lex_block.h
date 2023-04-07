@@ -82,11 +82,17 @@ public:
 
 protected:
    //следующие поля наследуются от класса Determ_analizer:
-   //std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list; //список лексем анализатора
-   //std::map<std::string, double> m_name_table;                       //таблица имён
-   //State m_curr_state;                                               //текущее состояние анализатора
-   //Input_symbol m_curr_sym;                                            //текущий входной символ
-   //std::fstream m_file;                                              //рабочий файловый поток
+   //std::list<std::tuple<Lexem, long long int, size_t>> m_lexem_list;  //список лексем анализатора
+   //std::map<std::string, double> m_name_table;                        //таблица имён
+   //State m_curr_state;                                                //текущее состояние анализатора
+   //Input_symbol m_curr_sym;                                           //текущий входной символ
+   //std::fstream m_file;                                               //рабочий файловый поток
+   //std::map<std::string, Symbol_lexem> m_collection_of_Symlex;        //коллекция существующих символьных лексем
+   //std::map<std::string, Lexem> m_collection_of_Lex;                  //коллекция существующих лексем
+   //std::map<std::string, State>  m_collection_of_States;              //коллекция существующих состояний
+
+   std::map<int, long long int> m_collection_of_lines;                  //коллекция указателей на лексемы "номер строки"
+
 
    const size_t m_state_number = 19;
    const size_t m_class_number = 10;
