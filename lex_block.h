@@ -68,16 +68,13 @@ public:
 
 
 
-   virtual void parse();
+   virtual void parse() override;
 
    void print_lexem_list();
 
    /*@brief Деструктор, закрывающий файловый поток после удаления объекта класса
    */
-   ~Lex_block()
-   {
-      m_file.close();
-   }
+   ~Lex_block();
 
 
 protected:

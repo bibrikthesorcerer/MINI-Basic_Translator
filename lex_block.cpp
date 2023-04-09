@@ -439,8 +439,7 @@ State Lex_block::C2a()
 
 State Lex_block::C2d()
 {
-   m_reg_var_name = m_curr_sym.s_value;
-
+   m_reg_var_name = static_cast<char>(m_curr_sym.s_value);
    return e_C2();
 }
 
@@ -970,6 +969,12 @@ void Lex_block::print_lexem_list()
    std::cout << std::endl;
 
 }
+
+Lex_block::~Lex_block()
+{
+   m_file.close();
+}
+
 
 const char* Lex_block::relation_table(long long int ch)
 {
