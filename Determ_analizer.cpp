@@ -17,6 +17,11 @@ Determ_analizer::Symbol_lexem::Symbol_lexem(const char* str, size_t id)
    m_id = id;
 }
 
+Determ_analizer::Symbol_lexem::Symbol_lexem(const Symbol_lexem& obj)
+{
+   *this = obj;
+}
+
 Determ_analizer::Symbol_lexem& Determ_analizer::Symbol_lexem::operator=(const Symbol_lexem& obj)
 {
    m_name = obj.m_name;

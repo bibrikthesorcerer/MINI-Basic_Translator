@@ -14,7 +14,7 @@ public:
    State(std::string name, size_t id);
 
    //конструктор копирования
-   State(State& obj);
+   State(const State& obj);
 
    //оператор присваивания, копирующий id объекта obj в объект this
    State& operator=(const State& obj);

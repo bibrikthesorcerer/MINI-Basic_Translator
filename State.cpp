@@ -19,7 +19,7 @@ State::State(std::string name, size_t id)
    m_id = id;
 }
 
-State::State(State& obj)
+State::State(const State& obj)
 {
    *this = obj;
 }

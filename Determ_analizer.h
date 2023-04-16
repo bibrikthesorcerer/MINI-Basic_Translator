@@ -24,8 +24,13 @@ public:
    public:
       std::string m_name;
       size_t m_id;
+
       Symbol_lexem(const char* str = "", size_t id = -1);
+
+      Symbol_lexem(const Symbol_lexem& obj);
+
       Symbol_lexem& operator=(const Symbol_lexem& obj);
+
       friend bool operator<(const Symbol_lexem& obj1, const Symbol_lexem& obj2);
    };
 
@@ -34,8 +39,11 @@ public:
    public:
       std::string m_name;
       size_t m_id;
+
       Lexem(std::string str = "", size_t id = -1);
+
       Lexem& operator=(const char* str);
+
       friend bool operator<(const Lexem& obj1, const Lexem& obj2);
 
    };
@@ -45,6 +53,7 @@ public:
    {
       int s_value; //ASCII - код символа
       Symbol_lexem s_class; //Принадлежность к алфавиту
+
       Input_symbol() { s_value = -1; s_class = ""; }
    };
 

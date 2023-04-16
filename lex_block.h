@@ -88,28 +88,33 @@ protected:
    //std::map<std::string, Lexem> m_collection_of_Lex;                  //коллекция существующих лексем
    //std::map<std::string, State>  m_collection_of_States;              //коллекция существующих состояний
 
-   std::map<int, long long int> m_collection_of_lines;                  //коллекция указателей на лексемы "номер строки"
 
 
    const size_t m_state_number = 19;
    const size_t m_class_number = 10;
 
-   Lexem m_reg_class;               //Регистр класса. служит для хранения класса лексемы
-   long long int m_reg_nt_pointer;  //Регистр указателя. содержит указатель для лексем PUSH и POP
-   size_t m_reg_relation;           //Регистр отношения. хранит информацию о первом символе отношения
-   double m_reg_number;             // Регистр числа. используется для вычисления констант
-   int m_reg_order;              // Регистр порядка
-   int m_reg_counter;            // Регистр счётчика
-   int m_reg_sign;        // Регистр знака числа
-   size_t m_reg_line_num = 1;       // Номер строки. хранит номер текущей строки в программе.
-   std::string m_reg_var_name;      // Регистр переменной. накапливает имя переменной
-   size_t m_reg_detection = 0;      //Регистр обнаружения. хранит номер позиции в таблице обнаружения для поиска ключевых слов.
-   size_t m_reg_value;              // Регистр значения. хранит значения лексем
+   int m_reg_order;                                                        // Регистр порядка
+   int m_reg_counter;                                                      // Регистр счётчика
+   int m_reg_sign;                                                         // Регистр знака числа
 
-   std::map<char, int> m_beg_vector;   // начальный вектор
+   Lexem m_reg_class;                                                      // Регистр класса. служит для хранения класса лексемы
 
-   std::vector<std::tuple<char, int, funct_ptr>> m_detect_table; // таблица обнаружения
-   std::map<State, std::map<Symbol_lexem, funct_ptr>> m_func_table;    //таблица переходов анализатора
+   size_t m_reg_detection  = 0;                                            // Регистр обнаружения. хранит номер позиции в таблице обнаружения для поиска ключевых слов.
+   size_t m_reg_value;                                                     // Регистр значения. хранит значения лексем
+   size_t m_reg_relation;                                                  // Регистр отношения. хранит информацию о первом символе отношения
+   int m_reg_line_num   = 1;                                            // Номер строки. хранит номер текущей строки в программе.
+
+   double m_reg_number;                                                    // Регистр числа. используется для вычисления констант
+
+   long long int m_reg_nt_pointer;                                         // Регистр указателя. содержит указатель для лексем PUSH и POP
+
+   std::string m_reg_var_name;                                             // Регистр переменной. накапливает имя переменной
+
+   std::map<int, long long int> m_collection_of_lines;                  // Коллекция указателей на лексемы "номер строки"
+   std::map<char, size_t> m_beg_vector;                                    // Начальный вектор
+   std::map<State, std::map<Symbol_lexem, funct_ptr>> m_func_table;        // Таблица переходов анализатора
+
+   std::vector<std::tuple<char, size_t, funct_ptr>> m_detect_table;        // Таблица обнаружения
 
 
    virtual Determ_analizer::Input_symbol transliterator(int sym);
@@ -178,7 +183,6 @@ private:
    void DA2D();
    void DA3D();
    void DA1E();
-   //void DA1ECYCLE();
 
    //методы, которыми заполнится таблица
 
