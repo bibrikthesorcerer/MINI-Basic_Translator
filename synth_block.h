@@ -30,3 +30,19 @@ public:
     
 
 };
+
+class Terminal : public SynthSymbol
+{
+public:
+    Terminal();
+
+    Terminal(const Terminal& obj);
+
+    Terminal(size_t id, std::string name);
+
+    Terminal& operator=(const Terminal& obj);
+
+    friend bool operator<(conts Terminal& obj, const Terminal& obj1);
+
+    friend bool operator==(conts Terminal& obj, const Terminal& obj1);
+};
