@@ -57,11 +57,11 @@ NonTerminal& NonTerminal::operator=(const NonTerminal& obj)
     return *this;
 }
 
-friend bool Terminal::operator==(const Terminal& obj1, const Terminal& obj2)
+friend bool NonTerminal::operator==(const NonTerminal& obj1, const NonTerminal& obj2)
 {
     return obj1.m_id == obj2.m_id;
 }
-friend bool Terminal::operator<(const Terminal& obj1, const Terminal& obj2)
+friend bool NonTerminal::operator<(const NonTerminal& obj1, const NonTerminal& obj2)
 {
     return obj1.m_id < obj2.m_id;
 }
