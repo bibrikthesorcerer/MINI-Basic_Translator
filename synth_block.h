@@ -2,13 +2,12 @@
 #include <vector>
 #include <list>
 #include <tuple>
-#include<map>
-#include<stack>
+#include <map>
+#include <stack>
 #include <iostream>
 #include <fstream>
 #include <set>
-
-
+#include <string>
 
 class SynthSymbol
 {
@@ -45,4 +44,39 @@ public:
     friend bool operator<(const Terminal& obj, const Terminal& obj1);
 
     friend bool operator==(const Terminal& obj, const Terminal& obj1);
+};
+
+//Класс, отвечающий за грамматику для синтаксического блока
+class Grammar
+{
+	std::map<std::string, int> m_setOfRules; // Изменить пару на другие типы
+	std::map<std::string, size_t> m_collectOfNonTerm;
+	std::map<std::string, size_t> m_collectOfTerm;
+
+public:
+
+	//Класс, отвечающий за правила в грамматике
+	class Rule
+	{
+        SynthSymbol m_leftPart; // Возможно изменить на NonTerminal
+		std::vector<SynthSymbol*> m_rightPart;
+
+	public:
+        //Конструктор класс Rule без пераметров
+        Rule();
+
+        /*
+        *@brief Конструктор копирования класс Rule
+        *@param Объект класса Rule
+        */
+        Rule(const Rule& obj);
+	};
+
+    /*
+    *@brief Конструктор класс Grammar с пераметрами
+    *@param Имя файла
+    */
+    Grammar(const std::string filename);
+
+    friend std::ostream& operator <<(std::ostream& out, const Grammar& obj);
 };
