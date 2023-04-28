@@ -1,6 +1,8 @@
 # VS project folder
 /minibasic-translator
 
+.vs/
+
 # Test object files
 automa69.h
 analizer69.h
