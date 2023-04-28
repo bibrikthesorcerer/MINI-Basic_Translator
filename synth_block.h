@@ -42,7 +42,7 @@ public:
 
     Terminal& operator=(const Terminal& obj);
 
-    friend bool operator<(conts Terminal& obj, const Terminal& obj1);
+    friend bool operator<(const Terminal& obj, const Terminal& obj1);
 
-    friend bool operator==(conts Terminal& obj, const Terminal& obj1);
+    friend bool operator==(const Terminal& obj, const Terminal& obj1);
 };
