@@ -33,6 +33,7 @@ SynthSymbol& SynthSymbol::operator=(const SynthSymbol& obj)
     return *this;
 }
 
+
 friend bool Terminal::operator<(const Terminal& obj, const Terminal& obj1)
 {
     return obj.m_id < obj1.m_id;
@@ -66,4 +67,37 @@ Terminal& Terminal::operator=(const Terminal& obj)
     m_id = obj.m_id;
     m_name = obj.m_name;
     return *this;
+}
+
+
+// NonTerminal class
+NonTerminal::NonTerminal()
+{
+    m_name = "";
+    m_id = -1;
+}
+NonTerminal::NonTerminal(const NonTerminal& nonTerminal)
+{
+    m_id = obj.m_id;
+    m_name = obj.m_name;
+}
+NonTerminal::NonTerminal(std::string name, size_t id);
+{
+    m_name = name;
+    m_id = id;
+}
+NonTerminal& NonTerminal::operator=(const NonTerminal& obj)
+{
+    m_name = obj.m_name;
+    m_id = obj.m_id;
+    return *this;
+}
+
+friend bool NonTerminal::operator==(const NonTerminal& obj1, const NonTerminal& obj2)
+{
+    return obj1.m_id == obj2.m_id;
+}
+friend bool NonTerminal::operator<(const NonTerminal& obj1, const NonTerminal& obj2)
+{
+    return obj1.m_id < obj2.m_id;
 }
