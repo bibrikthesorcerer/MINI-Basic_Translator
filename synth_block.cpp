@@ -1,9 +1,11 @@
 #include "synth_block.h"
-friend bool SynthSymbol::operator<(const SynthSymbol& obj, const SynthSymbol& obj1) // Здесь, как и далее, нужно убрать friend и название класс перед ::, вроде бы
+
+bool operator<(const SynthSymbol& obj, const SynthSymbol& obj1)
 {
     return obj.m_id < obj1.m_id;
 }
-friend bool SynthSymbol::operator==(const SynthSymbol& obj, const SynthSymbol& obj1)
+
+bool operator==(const SynthSymbol& obj, const SynthSymbol& obj1)
 {
     return obj.m_id == obj1.m_id;
 }
@@ -33,13 +35,12 @@ SynthSymbol& SynthSymbol::operator=(const SynthSymbol& obj)
     return *this;
 }
 
-
-friend bool Terminal::operator<(const Terminal& obj, const Terminal& obj1)
+bool operator<(const Terminal& obj, const Terminal& obj1)
 {
     return obj.m_id < obj1.m_id;
 }
 
-friend bool Terminal::operator==(const Terminal& obj, const Terminal& obj1)
+bool operator==(const Terminal& obj, const Terminal& obj1)
 {
     return obj.m_id == obj1.m_id;
 }
@@ -77,10 +78,10 @@ NonTerminal::NonTerminal()
 }
 NonTerminal::NonTerminal(const NonTerminal& nonTerminal)
 {
-    m_id = obj.m_id;
-    m_name = obj.m_name;
+    m_id = nonTerminal.m_id;
+    m_name = nonTerminal.m_name;
 }
-NonTerminal::NonTerminal(std::string name, size_t id);
+NonTerminal::NonTerminal(std::string name, size_t id)
 {
     m_name = name;
     m_id = id;
@@ -92,11 +93,11 @@ NonTerminal& NonTerminal::operator=(const NonTerminal& obj)
     return *this;
 }
 
-friend bool NonTerminal::operator==(const NonTerminal& obj1, const NonTerminal& obj2)
+bool operator==(const NonTerminal& obj1, const NonTerminal& obj2)
 {
     return obj1.m_id == obj2.m_id;
 }
-friend bool NonTerminal::operator<(const NonTerminal& obj1, const NonTerminal& obj2)
+bool operator<(const NonTerminal& obj1, const NonTerminal& obj2)
 {
     return obj1.m_id < obj2.m_id;
 }
@@ -109,27 +110,48 @@ Grammar::Grammar(const std::string filename)
         std::cout << "Error. Failed to open file." << std::endl;
         return;
     }
-    std::string partOfFile; //Прочитанная часть файла
-    size_t key = 0; // Неправильно задается ключ
+    std::string partOfFile;                 // Прочитанная часть файла
+    size_t key = 0;     // Неправильно задается ключ
+    size_t flagFirstNonTerminal = 0;        // Флаг, указывающий на то, что был прочитан первый нетерминал в строке
+    std::vector<SynthSymbol*> rightPartRule;// Вектор, который содержит указатели на симловы (терминалы или нетерминалы) из файла
+    NonTerminal firstNonTerminal;           // Первый нетерминал в строке
 
     while (!in.eof())
     {
-        std::getline(in, partOfFile, ' ');
+        in >> partOfFile;
         if (partOfFile.front() == '{' && partOfFile.back() == '}')
         {
-            std::pair<std::string, size_t> field = make_pair(partOfFile, key);
+            std::pair<std::string, size_t> field(partOfFile, key);
             m_collectOfNonTerm.insert(field);
-            key++; // Неправильно задается ключ
+            if (flagFirstNonTerminal == 0)
+            {
+                NonTerminal forCopy(partOfFile, key); // Переменная, созданная ради копирования в firstNonTerminal
+                firstNonTerminal = forCopy;
+                flagFirstNonTerminal = 1;
+            }
         }
-        else // Некоторые нетерминалы все же проходят
+        else
         {
             if (partOfFile == "~")
                 continue;
 
-            std::pair<std::string, size_t> field = make_pair(partOfFile, key);
+            std::pair<std::string, size_t> field(partOfFile, key);
             m_collectOfTerm.insert(field);
-            key++;
         }
+        if (flagFirstNonTerminal == 1)
+        {
+            SynthSymbol rightSymRule(key, partOfFile); // Символ (терминал или нетерминал) в правой части правила
+            rightPartRule.push_back(&rightSymRule);
+        }
+        if (in.peek() == '\n')
+        {
+            Rule theRules_(firstNonTerminal, rightPartRule); // Правило, для списка правил (т.е для m_setOfRules)
+            std::pair<NonTerminal, Rule> field(firstNonTerminal, theRules_);
+            m_setOfRules.insert(field);
+            rightPartRule.clear();
+            flagFirstNonTerminal = 0;
+        }
+        key++; // Неправильно задается ключ
     }
 
     in.close();
@@ -138,9 +160,49 @@ Grammar::Grammar(const std::string filename)
 std::ostream& operator <<(std::ostream& out, const Grammar& obj)
 {
     for (auto i : obj.m_collectOfNonTerm)
-        out << "NonTerm -" << i.first << std::endl;
+        out << "NonTerm - " << i.first << std::endl;
     for (auto i : obj.m_collectOfTerm)
-        out << "Term -" << i.first << std::endl;
+        out << "Term - " << i.first << std::endl;
+    for (auto i : obj.m_setOfRules)
+    {
+        out << i.first.m_name << " ~ ";
+/*        for (auto j : i.second.m_rightPart) - Выводит адрес, а не значение адреса
+            out << &j->m_name << " "; */
+        out << std::endl;
+    }
 
     return out;
+}
+
+Grammar::Rule::Rule()
+{
+    m_leftPart = NonTerminal();
+    m_rightPart = std::vector<SynthSymbol*>();
+}
+
+Grammar::Rule::Rule(const Rule& obj)
+{
+    m_leftPart = obj.m_leftPart;
+    m_rightPart = obj.m_rightPart;
+}
+
+Grammar::Rule::Rule(NonTerminal leftPart_, std::vector<SynthSymbol*> rightPart_)
+{
+    m_leftPart = leftPart_;
+    for (auto i : rightPart_)
+        m_rightPart.push_back(i);
+}
+
+/*
+Grammar::Rule::~Rule()
+{
+    delete &m_leftPart;
+    for (auto i : m_rightPart)
+        delete i;
+}
+*/
+
+void Grammar::Rule::push_back(SynthSymbol* newSynthSymbol)
+{
+    m_rightPart.push_back(newSynthSymbol);
 }

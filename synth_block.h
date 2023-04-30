@@ -53,7 +53,7 @@ public:
     NonTerminal(const NonTerminal& nonTerminal);
     NonTerminal(std::string name, size_t id);
 
-    NonTerminal& operator=(const NonTerm& obj); // Разве здесь не NonTerminal нужен?
+    NonTerminal& operator=(const NonTerminal& obj);
 
     friend bool operator==(const NonTerminal& obj1, const NonTerminal& obj2);
     friend bool operator<(const NonTerminal& obj1, const NonTerminal& obj2);
@@ -62,28 +62,44 @@ public:
 //Класс, отвечающий за грамматику для синтаксического блока
 class Grammar
 {
-	std::map<std::string, int> m_setOfRules; // Изменить пару на другие типы
-	std::map<std::string, size_t> m_collectOfNonTerm;
-	std::map<std::string, size_t> m_collectOfTerm;
-
 public:
 
-	//Класс, отвечающий за правила в грамматике
-	class Rule
-	{
-        SynthSymbol m_leftPart; // Возможно изменить на NonTerminal
-		std::vector<SynthSymbol*> m_rightPart;
+    //Класс, отвечающий за правила в грамматике
+    class Rule
+    {
+    public:
+        NonTerminal m_leftPart;
+        std::vector<SynthSymbol*> m_rightPart;
 
-	public:
-        //Конструктор класс Rule без пераметров
+        //Конструктор по умолчанию класса Rule
         Rule();
 
         /*
-        *@brief Конструктор копирования класс Rule
+        *@brief Конструктор копирования класса Rule
         *@param Объект класса Rule
         */
         Rule(const Rule& obj);
-	};
+
+        /*
+        *@brief Конструктор с параметрами класса Rule
+        *@param Нетерминал, отвечающий за левую часть правила
+        *@param Вектор указателей на SynthSymbol, отвечающий за правую часть правила
+        */
+        Rule(NonTerminal leftPart_, std::vector<SynthSymbol*> rightPart_);
+
+        //Деструктор класса Rule
+//        ~Rule(); - неправильная реализация
+
+        /*
+        *@brief Функция, которая добавляет в конец правой части новый синтаксический символ
+        *@param Указатель на элемент типа SynthSymbol
+        */
+        void push_back(SynthSymbol* newSynthSymbol);
+    };
+
+    std::multimap<NonTerminal, Rule> m_setOfRules; // Здесь нужен NonTerminal или все же SyntSymbol
+    std::map<std::string, size_t> m_collectOfNonTerm;
+    std::map<std::string, size_t> m_collectOfTerm;
 
     /*
     *@brief Конструктор класс Grammar с пераметрами
