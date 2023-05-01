@@ -128,6 +128,7 @@ Grammar::Grammar(const std::string filename)
                 NonTerminal forCopy(partOfFile, key); // Переменная, созданная ради копирования в firstNonTerminal
                 firstNonTerminal = forCopy;
                 flagFirstNonTerminal = 1;
+                continue;
             }
         }
         else
@@ -140,10 +141,11 @@ Grammar::Grammar(const std::string filename)
         }
         if (flagFirstNonTerminal == 1)
         {
-            SynthSymbol rightSymRule(key, partOfFile); // Символ (терминал или нетерминал) в правой части правила
-            rightPartRule.push_back(&rightSymRule);
+            SynthSymbol* rightSymRule; // Ссылка на символ (терминал или нетерминал) в правой части правила
+            rightSymRule = new SynthSymbol(key, partOfFile);
+            rightPartRule.push_back(rightSymRule);
         }
-        if (in.peek() == '\n')
+        if (in.peek() == '\n' || in.peek() == EOF)
         {
             Rule theRules_(firstNonTerminal, rightPartRule); // Правило, для списка правил (т.е для m_setOfRules)
             std::pair<NonTerminal, Rule> field(firstNonTerminal, theRules_);
@@ -166,8 +168,8 @@ std::ostream& operator <<(std::ostream& out, const Grammar& obj)
     for (auto i : obj.m_setOfRules)
     {
         out << i.first.m_name << " ~ ";
-/*        for (auto j : i.second.m_rightPart) - Выводит адрес, а не значение адреса
-            out << &j->m_name << " "; */
+        for (auto j : i.second.m_rightPart)
+            out << j->m_name << " "; 
         out << std::endl;
     }
 
@@ -205,4 +207,28 @@ Grammar::Rule::~Rule()
 void Grammar::Rule::push_back(SynthSymbol* newSynthSymbol)
 {
     m_rightPart.push_back(newSynthSymbol);
+}
+
+Grammar::Rule& Grammar::Rule::operator=(const Rule& obj)
+{
+    if (*this == obj)
+        return *this;
+
+    m_leftPart = obj.m_leftPart;
+    m_rightPart.clear();
+
+    for (auto i : obj.m_rightPart)
+        m_rightPart.push_back(i);
+
+    return *this;
+}
+
+bool operator ==(const Grammar::Rule& obj_1, const Grammar::Rule& obj_2)
+{
+    if (!(obj_1.m_leftPart == obj_2.m_leftPart))
+        return 0;
+    else if (obj_1.m_rightPart != obj_2.m_rightPart)
+        return 0;
+    else
+        return 1;
 }

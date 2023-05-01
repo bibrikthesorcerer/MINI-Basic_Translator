@@ -88,16 +88,31 @@ public:
         Rule(NonTerminal leftPart_, std::vector<SynthSymbol*> rightPart_);
 
         //Деструктор класса Rule
-//        ~Rule(); - неправильная реализация
+//        ~Rule();
 
         /*
         *@brief Функция, которая добавляет в конец правой части новый синтаксический символ
         *@param Указатель на элемент типа SynthSymbol
         */
         void push_back(SynthSymbol* newSynthSymbol);
+
+        /*
+        *@brief Перегрузка оператора присаивания для класса Rule
+        *@param Константная ссылка на объект класса Rule
+        *@return Cсылка на объект класса Rule
+        */
+        Rule& operator=(const Rule& obj);
+
+        /*
+        *@brief Перегрузка оператора равенства для класса Rule
+        *@param Константная ссылка на объект класса Rule
+        *@param Константная ссылка на объект класса Rule
+        *@return True или False
+        */
+        friend bool operator==(const Rule& obj_1, const Rule& obj_2);
     };
 
-    std::multimap<NonTerminal, Rule> m_setOfRules; // Здесь нужен NonTerminal или все же SyntSymbol
+    std::multimap<NonTerminal, Rule> m_setOfRules;
     std::map<std::string, size_t> m_collectOfNonTerm;
     std::map<std::string, size_t> m_collectOfTerm;
 
