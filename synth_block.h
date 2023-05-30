@@ -46,16 +46,3 @@ public:
 
     friend bool operator==(const Terminal& obj, const Terminal& obj1);
 };
-
-class NonTerminal : public SynthSymbol
-{
-public:
-    NonTerminal();
-    NonTerminal(const NonTerminal& nonTerminal);
-    NonTerminal(std::string name, size_t id);
-
-    NonTerminal& operator=(const NonTerm& obj);
-
-    friend bool operator==(const NonTerminal& obj1, const NonTerminal& obj2);
-    friend bool operator<(const NonTerminal& obj1, const NonTerminal& obj2);
-};
