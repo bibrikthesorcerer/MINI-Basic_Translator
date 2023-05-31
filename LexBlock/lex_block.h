@@ -66,7 +66,10 @@ public:
    */
    Lex_block(std::string filename);
 
-
+   std::list<std::tuple<Lexem, long long int, size_t>> get_lexem_list()
+   {
+      return m_lexem_list;
+   }
 
    virtual void parse() override;
 
