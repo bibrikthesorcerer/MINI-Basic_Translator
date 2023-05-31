@@ -31,6 +31,8 @@ public:
 	}
 	void synth_analize();
 	std::shared_ptr<Symbol> process_wrap(Grammar_rule&);
+	void print_BF_table();
+	void print_sorted_rules();
 private:
 	bool EQUAL(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
 	bool MORE(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
