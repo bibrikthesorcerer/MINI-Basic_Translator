@@ -1,5 +1,5 @@
 #pragma once
-#include"�F_grammar.h"
+#include"../SynthBlock/CF_grammar.h"
 #include "../LexBlock/lex_block.h"
 #include <stack>
 
