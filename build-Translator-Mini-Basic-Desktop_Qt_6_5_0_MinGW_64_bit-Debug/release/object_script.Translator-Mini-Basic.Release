@@ -1,0 +1,12 @@
+release/Determ_analizer.o
+release/State.o
+release/lex_block.o
+release/CF_grammar.o
+release/symbol.o
+release/synth_block.o
+release/main.o
+release/mdidocument.o
+release/translator.o
+release/qrc_icons.o
+release/moc_mdidocument.o
+release/moc_translator.o

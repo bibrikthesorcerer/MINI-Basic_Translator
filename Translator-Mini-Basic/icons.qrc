@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/rsc">
+        <file>imgs/filenew.png</file>
+        <file>imgs/fileopen.png</file>
+        <file>imgs/filesave.png</file>
+        <file>imgs/3d.png</file>
+    </qresource>
+</RCC>

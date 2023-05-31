@@ -1,0 +1,12 @@
+debug/Determ_analizer.o
+debug/State.o
+debug/lex_block.o
+debug/CF_grammar.o
+debug/symbol.o
+debug/synth_block.o
+debug/main.o
+debug/mdidocument.o
+debug/translator.o
+debug/qrc_icons.o
+debug/moc_mdidocument.o
+debug/moc_translator.o
