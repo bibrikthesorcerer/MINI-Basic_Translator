@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <iostream>
 #include "LexBlock/lex_block.h"
+#include "SynthBlock/synth_block.h"
 
 /*
 Пример программы для теста лексблока из книги Льюиса:
@@ -23,7 +24,7 @@
 int main()
 {
    Lex_block ADAM("D:/Github/MINI-BASIC_Translator/input.txt");
-   ADAM.parse();
-   ADAM.print_lexem_list();
+   BF_grammar EVA("grammar.txt");
+   EVA.fill_symbol_list(ADAM.get_lexem_list());
    return 0;
 }

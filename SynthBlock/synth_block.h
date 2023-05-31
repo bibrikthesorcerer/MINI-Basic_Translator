@@ -30,9 +30,9 @@ public:
 		fill_symbol_list(lexem_list);
 	}
 	void synth_analize();
-	std::shared_ptr<Symbol> process_wrap(Grammar_rule&);
 	void print_BF_table();
 	void print_sorted_rules();
+	void fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>);
 private:
 	bool EQUAL(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
 	bool MORE(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
@@ -40,7 +40,7 @@ private:
 
 	BF_RELATION check_relation(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
 	void create_BF_table();
-
+	std::shared_ptr<Symbol> process_wrap(Grammar_rule&);
 	void sort_by_right_part();
-	void fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>);
+
 };
