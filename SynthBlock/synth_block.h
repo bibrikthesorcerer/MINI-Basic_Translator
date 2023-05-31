@@ -3,9 +3,21 @@
 #include "../LexBlock/lex_block.h"
 #include <stack>
 
-struct ATOM {
+struct ATOM_BASIC {
 	enum ATOM_TYPE { LET, IF_GOTO, FOR_STEP, FOR, LINE, GOTO, GOSUB, RETURN, END, REM, NEXT } type;
 	std::list<long long int> atributs;
+
+	ATOM_BASIC& operator=(const ATOM_BASIC& obj)
+	{
+		type = obj.type;
+		atributs = obj.atributs;
+		return *this;
+	}
+	ATOM_BASIC(){}
+	ATOM_BASIC(const ATOM_BASIC& obj)
+	{
+		*this = obj;
+	}
 };
 
 class BF_grammar : public CF_grammar
@@ -17,7 +29,8 @@ class BF_grammar : public CF_grammar
 	std::set<Grammar_rule> m_sorted_by_right_part;
 	std::list<std::shared_ptr<Symbol>> m_in_word;
 	std::map<std::string, Determ_analizer::Lexem> m_lexems;
-	std::map<size_t, ATOM> m_atom_output;
+	std::map<size_t, ATOM_BASIC> m_atom_output;
+	bool m_errorFlag = false;
 
 public:
 	BF_grammar(const std::string filename, std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>> lexem_list = std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>()) : CF_grammar(filename)
@@ -33,6 +46,14 @@ public:
 	void print_BF_table();
 	void print_sorted_rules();
 	void fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>);
+	std::map<size_t, ATOM_BASIC> get_atoms()
+	{
+		return m_atom_output;
+	}
+	bool get_errorFlag()
+	{
+		return m_errorFlag;
+	}
 private:
 	bool EQUAL(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
 	bool MORE(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);

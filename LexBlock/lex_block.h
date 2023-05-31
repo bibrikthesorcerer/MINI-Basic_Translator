@@ -71,6 +71,16 @@ public:
       return m_lexem_list;
    }
 
+   std::map<std::string, variable> get_nameTable()
+   {
+      return m_name_table;
+   }
+
+   bool get_errorsFlag()
+   {
+      return m_error_flag;
+   }
+
    virtual void parse() override;
 
    void print_lexem_list();
@@ -99,7 +109,7 @@ protected:
    int m_reg_order;                                                        // Регистр порядка
    int m_reg_counter;                                                      // Регистр счётчика
    int m_reg_sign;                                                         // Регистр знака числа
-   bool m_error_flag;
+   bool m_error_flag = false;
 
    Lexem m_reg_class;                                                      // Регистр класса. служит для хранения класса лексемы
 
@@ -114,7 +124,7 @@ protected:
 
    std::string m_reg_var_name;                                             // Регистр переменной. накапливает имя переменной
 
-   std::map<int, long long int> m_collection_of_lines;                  // Коллекция указателей на лексемы "номер строки"
+   std::map<int, long long int> m_collection_of_lines;               // Коллекция указателей на лексемы "номер строки"
    std::map<int, long long int> m_collection_of_gotos;
    std::map<char, size_t> m_beg_vector;                                    // Начальный вектор
    std::map<State, std::map<Symbol_lexem, funct_ptr>> m_func_table;        // Таблица переходов анализатора

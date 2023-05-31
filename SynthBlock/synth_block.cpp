@@ -115,12 +115,15 @@ void BF_grammar::create_BF_table()
 			{
 			case LESS_EQ:
 				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " < and == " << std::endl;
+				m_errorFlag = true;
 				break;
 			case MORE_EQ:
 				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and == " << std::endl;
+				m_errorFlag = true;
 				break;
 			case MORE_LESS:
 				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and < " << std::endl;
+				m_errorFlag = true;
 				break;
 			default:
 				m_BF_table[*it.second][*that.second] = rel;
@@ -229,7 +232,10 @@ void BF_grammar::sort_by_right_part()
 	for (auto& it : m_rules)
 	{
 		if (!m_sorted_by_right_part.insert(it.second).second)
+		{
 			std::cout << "rules are not unique" << std::endl;
+			m_errorFlag = true;
+		}
 	}
 
 
@@ -238,8 +244,8 @@ void BF_grammar::sort_by_right_part()
 void BF_grammar::fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>> lexem_list)
 {
 	std::shared_ptr<Symbol> curr_sym;
-	long long int converted_ptr;
 	std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>::iterator that;
+	long long int converted_ptr;
 	for (auto it = lexem_list.begin(); it != lexem_list.end(); ++it)
 	{
 		curr_sym = std::make_shared<Terminal>();
@@ -253,6 +259,10 @@ void BF_grammar::fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, l
 			if (std::get<0>(*(++that)).m_id == 4)
 				continue;
 			curr_sym->m_name = "LINE_NUM";
+			curr_sym->m_atributes.pop_back();
+			converted_ptr = std::get<2>(*it);
+			curr_sym->m_atributes.push_back(converted_ptr);
+
 			break;
 		case 1:
 			curr_sym->m_name = "OPERAND";
@@ -360,7 +370,7 @@ void BF_grammar::synth_analize()
 			++curr_symb;
 			break;
 		case More:
-			if (stack.top()->m_id == get_id("$") && *(*curr_symb) == *Dollar)
+			if (stack.top()->m_id == get_id("[S]") && *(*curr_symb) == *Dollar)
 			{
 				std::cout << "GOOD";
 				return;
@@ -387,6 +397,7 @@ void BF_grammar::synth_analize()
 			break;
 		case None:
 			std::cout << "error" << std::endl;
+			m_errorFlag = true;
 			return;
 		}
 	}
@@ -394,21 +405,21 @@ void BF_grammar::synth_analize()
 
 std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 {
-	ATOM atom;
+	ATOM_BASIC atom;
 	switch (rule.rule_number)
 	{
 	case 1: //[S] -> [PROGRAM]
 
 		break;
 	case 2: //[PROGRAM] -> LINE_NUM [OPERATOR] [PROGRAM]
-		atom.type = (ATOM::ATOM_TYPE)rule.m_right_part[1]->m_atributes.front();
+		atom.type = (ATOM_BASIC::ATOM_TYPE)rule.m_right_part[1]->m_atributes.front();
 		rule.m_right_part[1]->m_atributes.pop_front();
 		rule.m_right_part[1]->m_atributes.pop_front();
 		atom.atributs = rule.m_right_part[1]->m_atributes;
-		if (atom.type == ATOM::FOR || atom.type == ATOM::FOR_STEP)
+		if (atom.type == ATOM_BASIC::FOR || atom.type == ATOM_BASIC::FOR_STEP)
 		{
-			ATOM next;
-			next.type = ATOM::NEXT;
+			ATOM_BASIC next;
+			next.type = ATOM_BASIC::NEXT;
 			next.atributs.push_back(atom.atributs.back());
 			atom.atributs.pop_back();
 			atom.atributs.pop_back();
@@ -418,14 +429,14 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		m_atom_output.emplace(rule.m_right_part[0]->m_atributes.front(), atom);
 		break;
 	case 3: //[PROGRAM] -> LINE_NUM [OPERATOR]
-		atom.type = (ATOM::ATOM_TYPE)rule.m_right_part[1]->m_atributes.front();
+		atom.type = (ATOM_BASIC::ATOM_TYPE)rule.m_right_part[1]->m_atributes.front();
 		rule.m_right_part[1]->m_atributes.pop_front();
 		rule.m_right_part[1]->m_atributes.pop_front();
 		atom.atributs = rule.m_right_part[1]->m_atributes;
-		if (atom.type == ATOM::FOR || atom.type == ATOM::FOR_STEP)
+		if (atom.type == ATOM_BASIC::FOR || atom.type == ATOM_BASIC::FOR_STEP)
 		{
-			ATOM next;
-			next.type = ATOM::NEXT;
+			ATOM_BASIC next;
+			next.type = ATOM_BASIC::NEXT;
 			next.atributs.push_back(atom.atributs.back());
 			atom.atributs.pop_back();
 			atom.atributs.pop_back();
@@ -438,27 +449,19 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		rule.m_non_terminal->m_atributes = rule.m_right_part[0]->m_atributes;
 		break;
 	case 5: //[OPERATOR] -> LET [E]
-		/*std::cout << reinterpret_cast<operand*>(rule.m_right_part[0]->m_atributes.front())->op_name << "\n = \n";
-		for (auto it : rule.m_right_part[1]->m_atributes)
-		{
-			if (it != 43 && it != 42)
-				std::cout << reinterpret_cast<operand*>(it)->op_name << std::endl;
-			else
-				std::cout << (char)it << std::endl;
-		}*/
-		rule.m_non_terminal->m_atributes.push_back(ATOM::LET);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::LET);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes.push_back(rule.m_right_part[0]->m_atributes.front());
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[1]->m_atributes;
 		break;
 	case 6: //[OPERATOR] -> [GOTO]
-		rule.m_non_terminal->m_atributes.push_back(ATOM::GOTO);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::GOTO);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_right_part[0]->m_atributes;
 		break;
 	case 7: //[OPERATOR] -> IF [TEST] GOTO
-		rule.m_non_terminal->m_atributes.push_back(ATOM::IF_GOTO);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::IF_GOTO);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[1]->m_atributes;
 		rule.m_non_terminal->m_atributes.push_back(-1);
@@ -472,7 +475,7 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[2]->m_atributes;
 		break;
 	case 9: //[OPERATOR] -> [FOR1] [NEXT]
-		rule.m_non_terminal->m_atributes.push_back(ATOM::FOR_STEP);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::FOR_STEP);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[0]->m_atributes;
 		rule.m_non_terminal->m_atributes.push_back(-1);
@@ -494,7 +497,7 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[5]->m_atributes;
 		break;
 	case 13: //[OPERATOR] -> [FOR2] [NEXT]
-		rule.m_non_terminal->m_atributes.push_back(ATOM::FOR);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::FOR);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[0]->m_atributes;
 		rule.m_non_terminal->m_atributes.push_back(-1);
@@ -504,11 +507,6 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		rule.m_non_terminal->m_atributes = rule.m_right_part[0]->m_atributes;
 		break;
 	case 15://[FOR4] -> FOR [E] TO [E]
-		/*atom.type = ATOM::FOR;
-		atom.atributs.push_back(rule.m_right_part[0]->m_atributes.front());
-		atom.atributs = atom.atributs + rule.m_right_part[1]->m_atributes;
-		atom.atributs.push_back(-1);
-		atom.atributs = atom.atributs + rule.m_right_part[3]->m_atributes;*/
 		rule.m_non_terminal->m_atributes = rule.m_right_part[0]->m_atributes;
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes = rule.m_non_terminal->m_atributes + rule.m_right_part[1]->m_atributes;
@@ -519,21 +517,21 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 		rule.m_non_terminal->m_atributes = rule.m_right_part[0]->m_atributes;
 		break;
 	case 17: //[OPERATOR] -> REM
-		rule.m_non_terminal->m_atributes.push_back(ATOM::REM);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::REM);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		break;
 	case 18: //[OPERATOR] -> GOSUB
-		rule.m_non_terminal->m_atributes.push_back(ATOM::GOSUB);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::GOSUB);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes.push_back(rule.m_right_part[0]->m_atributes.front());
 		break;
 	case 19: //[OPERATOR] -> RETURN
-		rule.m_non_terminal->m_atributes.push_back(ATOM::RETURN);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::RETURN);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes.push_back(rule.m_right_part[0]->m_atributes.front());
 		break;
 	case 20: //[OPERATOR] -> END
-		rule.m_non_terminal->m_atributes.push_back(ATOM::END);
+		rule.m_non_terminal->m_atributes.push_back(ATOM_BASIC::END);
 		rule.m_non_terminal->m_atributes.push_back(-1);
 		rule.m_non_terminal->m_atributes.push_back(rule.m_right_part[0]->m_atributes.front());
 		break;

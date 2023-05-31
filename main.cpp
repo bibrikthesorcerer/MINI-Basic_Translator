@@ -3,6 +3,7 @@
 #include <iostream>
 #include "LexBlock/lex_block.h"
 #include "SynthBlock/synth_block.h"
+#include "CodeGen/code_generator.h"
 
 /*
 Пример программы для теста лексблока из книги Льюиса:
@@ -25,8 +26,23 @@ int main()
 {
    Lex_block ADAM("D:/Github/MINI-BASIC_Translator/input.txt");
    ADAM.parse();
-   BF_grammar EVA("D:/Github/MINI-BASIC_Translator/grammar.txt");
-   EVA.fill_symbol_list(ADAM.get_lexem_list());
-   EVA.synth_analize();
+   if(ADAM.get_errorsFlag() == false)
+   {
+      BF_grammar EVA("D:/Github/MINI-BASIC_Translator/grammar.txt", ADAM.get_lexem_list());
+      EVA.synth_analize();
+      if (EVA.get_errorFlag() == false)
+      {
+         Code_generator KAINE(ADAM.get_nameTable(), EVA.get_atoms());
+         KAINE.Generate("assembly.txt");
+      }
+      else
+      {
+         std::cout << "synthblock met errors" << std::endl;
+      }
+   }
+   else
+   {
+      std::cout << "lexblock met errors" << std::endl;
+   }
    return 0;
 }

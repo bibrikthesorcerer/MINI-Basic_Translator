@@ -61,6 +61,12 @@ public:
    {
       std::string var_name;
       double var_value = 0;
+
+      variable& operator=(const variable& obj)
+      {
+         var_name = obj.var_name;
+         var_value = obj.var_value;
+      }
    };
 
 protected:
