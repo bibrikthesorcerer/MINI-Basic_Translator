@@ -211,3 +211,38 @@ std::set<std::shared_ptr<Symbol>> CF_grammar::START1_REC(const std::shared_ptr<S
 
     return first_syms;
 }
+
+////////////////////////////////////////////////////////END1//////////////////////////////////////////////////////////////
+std::set<std::shared_ptr<Symbol>> CF_grammar::END1(const std::shared_ptr<Symbol>& S)
+{
+    if (dynamic_cast<Terminal*>(S.get()))
+    {
+        return std::set<std::shared_ptr<Symbol>>();
+    }
+
+    std::set<Symbol> seen;
+
+    return END1_REC(S, seen);
+}
+
+std::set<std::shared_ptr<Symbol>> CF_grammar::END1_REC(const std::shared_ptr<Symbol>& S, std::set<Symbol>& seen)
+{
+    std::set<std::shared_ptr<Symbol>> last_syms;
+
+    size_t rules_amount = m_rules.count(*S);
+    auto it = m_rules.find(*S);
+
+    for (size_t i = 0; it != m_rules.end() && i < rules_amount; ++i, ++it)
+    {
+        last_syms.insert((*it).second.m_right_part[(*it).second.m_right_part.size() - 1]);
+
+        if (seen.find(*it->second.m_right_part[(*it).second.m_right_part.size() - 1]) == seen.end())
+        {
+            seen.insert(*it->second.m_right_part[(*it).second.m_right_part.size() - 1]);
+            last_syms.merge(END1_REC((*it).second.m_right_part[(*it).second.m_right_part.size() - 1], seen));
+        }
+    }
+
+    return last_syms;
+}
+
