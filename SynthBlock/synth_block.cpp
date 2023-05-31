@@ -360,7 +360,7 @@ void BF_grammar::synth_analize()
 			++curr_symb;
 			break;
 		case More:
-			if (stack.top()->m_id == get_id("[S]") && *(*curr_symb) == *Dollar)
+			if (stack.top()->m_id == get_id("$") && *(*curr_symb) == *Dollar)
 			{
 				std::cout << "GOOD";
 				return;

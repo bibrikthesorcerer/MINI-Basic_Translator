@@ -24,7 +24,9 @@
 int main()
 {
    Lex_block ADAM("D:/Github/MINI-BASIC_Translator/input.txt");
-   BF_grammar EVA("grammar.txt");
+   ADAM.parse();
+   BF_grammar EVA("D:/Github/MINI-BASIC_Translator/grammar.txt");
    EVA.fill_symbol_list(ADAM.get_lexem_list());
+   EVA.synth_analize();
    return 0;
 }
