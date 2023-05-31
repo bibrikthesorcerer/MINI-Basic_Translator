@@ -67,3 +67,159 @@ bool BF_grammar::LESS(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B)
 
 	return res;
 }
+
+BF_grammar::BF_RELATION BF_grammar::check_relation(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B)
+{
+	bool wasrelat = false;
+	BF_RELATION relat_code = None;
+
+	if (EQUAL(A, B))
+	{
+		wasrelat = true;
+		relat_code = Equal;
+	}
+	if (LESS(A, B))
+	{
+		if (wasrelat)
+			return LESS_EQ;
+		wasrelat = true;
+		relat_code = Less;
+	}
+	if (MORE(A, B))
+	{
+		if (wasrelat)
+		{
+			if (relat_code == Equal)
+				return MORE_EQ;
+			else
+				return MORE_LESS;
+		}
+		relat_code = More;
+	}
+
+	return relat_code;
+}
+
+void BF_grammar::create_BF_table()
+{
+	for (auto& it : m_terminals)
+		for (auto& that : m_terminals)
+		{
+			BF_RELATION rel = check_relation(it.second, that.second);
+			/*if (rel == Error)
+			{
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << std::endl;
+			}*/
+
+			switch (rel)
+			{
+			case LESS_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " < and == " << std::endl;
+				break;
+			case MORE_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and == " << std::endl;
+				break;
+			case MORE_LESS:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and < " << std::endl;
+				break;
+			default:
+				m_BF_table[*it.second][*that.second] = rel;
+				break;
+			}
+		}
+	for (auto& it : m_non_terminals)
+		for (auto& that : m_terminals)
+		{
+			BF_RELATION rel = check_relation(it.second, that.second);
+			switch (rel)
+			{
+			case LESS_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " < and == " << std::endl;
+				break;
+			case MORE_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and == " << std::endl;
+				break;
+			case MORE_LESS:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and < " << std::endl;
+				break;
+			default:
+				m_BF_table[*it.second][*that.second] = rel;
+				break;
+			}
+		}
+	for (auto& it : m_terminals)
+		for (auto& that : m_non_terminals)
+		{
+			BF_RELATION rel = check_relation(it.second, that.second);
+			switch (rel)
+			{
+			case LESS_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " < and == " << std::endl;
+				break;
+			case MORE_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and == " << std::endl;
+				break;
+			case MORE_LESS:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and < " << std::endl;
+				break;
+			default:
+				m_BF_table[*it.second][*that.second] = rel;
+				break;
+			}
+		}
+	for (auto& it : m_non_terminals)
+		for (auto& that : m_non_terminals)
+		{
+			BF_RELATION rel = check_relation(it.second, that.second);
+			switch (rel)
+			{
+			case LESS_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " < and == " << std::endl;
+				break;
+			case MORE_EQ:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and == " << std::endl;
+				break;
+			case MORE_LESS:
+				std::cout << "Relation conflict between " << it.second->m_name << " and " << that.second->m_name << " > and < " << std::endl;
+				break;
+			default:
+				m_BF_table[*it.second][*that.second] = rel;
+				break;
+			}
+		}
+
+
+	/////////////////////////////Заполнение отношений с долларом//////////////////////////////////
+	for (auto& it : m_terminals)
+	{
+		auto START_S = START1(m_non_terminals["[S]"]);
+		bool in_start_s = false;
+		for (auto& that : START_S)
+			if (*that == *it.second)
+				m_BF_table[*Dollar][*that] = Less;
+	}
+	for (auto& it : m_non_terminals)
+	{
+		auto START_S = START1(m_non_terminals["[S]"]);
+		bool in_start_s = false;
+		for (auto& that : START_S)
+			if (*that == *it.second)
+				m_BF_table[*Dollar][*that] = Less;
+	}
+	for (auto& it : m_terminals)
+	{
+		auto END_S = END1(m_non_terminals["[S]"]);
+		bool in_END_s = false;
+		for (auto that : END_S)
+			if (*that == *it.second)
+				m_BF_table[*that][*Dollar] = More;
+	}
+	for (auto& it : m_non_terminals)
+	{
+		auto END_S = END1(m_non_terminals["[S]"]);
+		bool in_END_s = false;
+		for (auto that : END_S)
+			if (*that == *it.second)
+				m_BF_table[*that][*Dollar] = More;
+	}
+}

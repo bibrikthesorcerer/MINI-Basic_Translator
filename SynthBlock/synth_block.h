@@ -1,6 +1,6 @@
 #pragma once
-#include"CF_grammar.h"
-#include "lex_block.h"
+#include"ÑF_grammar.h"
+#include "../LexBlock/lex_block.h"
 #include <stack>
 
 struct ATOM {
@@ -16,11 +16,11 @@ class BF_grammar : public CF_grammar
 	std::map<Symbol, std::map<Symbol, BF_RELATION>> m_BF_table;
 	std::set<Grammar_rule> m_sorted_by_right_part;
 	std::list<std::shared_ptr<Symbol>> m_in_word;
-	std::map<std::string, Lexem> m_lexems;
+	std::map<std::string, Determ_analizer::Lexem> m_lexems;
 	std::map<size_t, ATOM> m_atom_output;
 
 public:
-	BF_grammar(const std::string filename, std::list<std::tuple<Lexem, long long int, size_t>> lexem_list = std::list<std::tuple<Lexem, long long int, size_t>>()) : CF_grammar(filename)
+	BF_grammar(const std::string filename, std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>> lexem_list = std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>()) : CF_grammar(filename)
 	{
 		sort_by_right_part();
 		Dollar = std::make_shared<Symbol>();
@@ -40,5 +40,5 @@ private:
 	void create_BF_table();
 
 	void sort_by_right_part();
-	void fill_symbol_list(std::list<std::tuple<Lexem, long long int, size_t>>);
+	void fill_symbol_list(std::list<std::tuple<Determ_analizer::Lexem, long long int, size_t>>);
 };
