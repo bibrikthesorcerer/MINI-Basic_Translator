@@ -902,12 +902,26 @@ void Lex_block::print_lexem_list()
       }
       case 7: //goto
       {
-         std::cout << "GOTO " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it)))))<< " ";
+          if(std::get<1>(*it) != 0)
+          {
+              std::cout << "GOTO " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it))))) << " ";
+          }
+          else
+          {
+              std::cout << "GOTO ERROR" << " ";
+          }
          break;
       }
       case 8: //gosub
       {
-         std::cout << "GOSUB " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it))))) << " ";
+          if (std::get<1>(*it) != 0)
+          {
+              std::cout << "GOSUB " << std::get<2>(*(reinterpret_cast<std::tuple<Lexem, long long int, size_t>*>(*reinterpret_cast<long long int*>(std::get<1>(*it))))) << " ";
+          }
+          else
+          {
+              std::cout << "GOSUB ERROR" << " ";
+          }
          break;
       }
       case 9:// (
@@ -1022,6 +1036,7 @@ void Lex_block::DA3D()
 
 State Lex_block::Error1()
 {
+    m_error_flag = true;
    if(m_reg_class.m_id != 17 )//error
    {
       m_reg_class = m_collection_of_Lex["lex_error"];
@@ -1141,6 +1156,20 @@ void Lex_block::parse()
       m_curr_state = (this->*m_func_table[m_curr_state][m_curr_sym.s_class])();
    }
 
+   //проверим, есть ли строки для всех goto
+   for (auto& itGoto : m_collection_of_gotos)
+   {
+       auto findIt = m_collection_of_lines.find(itGoto.first);
+       if (findIt == m_collection_of_lines.end())
+       {
+           m_error_flag = true;
+           return;
+       }
+       else
+       {
+           itGoto.second = findIt->second;
+       }
+   }
 }
 
 void Lex_block::add_variable()
@@ -1179,7 +1208,8 @@ void Lex_block::create_lexem()
    }
    if (m_reg_class.m_id == 7 /*goto*/ || m_reg_class.m_id == 8 /*gosub*/)
    {
-      m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_lines[m_reg_line_num]);
+      m_collection_of_gotos[m_reg_line_num] = 0;
+      m_reg_nt_pointer = reinterpret_cast<long long int>(&m_collection_of_gotos[m_reg_line_num]);
       std::tuple<Lexem, long long int, int> tup(m_reg_class, m_reg_nt_pointer, m_reg_line_num);
       m_lexem_list.push_back(tup);
    }

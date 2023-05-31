@@ -1,4 +1,4 @@
-#include "CF_grammar.h"
+#include "../SynthBlock/CF_grammar.h"
 #include <string>
 
 

@@ -15,14 +15,14 @@
 class Grammar_rule
 {
 public:
-    std::shared_ptr<Symbol> m_non_terminal;                                        //РќРµС‚РµСЂРјРёРЅР°Р»СЊРЅС‹Р№ СЃРёРјРІРѕР» РёР· Р»РµРІРѕР№ С‡Р°СЃС‚Рё РїСЂР°РІРёР»Р°
-    std::vector<std::shared_ptr<Symbol>> m_right_part;                             //РџСЂР°РІР°СЏ С‡Р°СЃС‚СЊ РїСЂР°РІРёР»Р°
+    std::shared_ptr<Symbol> m_non_terminal;                                        //Нетерминальный символ из левой части правила
+    std::vector<std::shared_ptr<Symbol>> m_right_part;                             //Правая часть правила
     size_t rule_number;
 public:
 
     Grammar_rule() { rule_number = -1; }
 
-    ~Grammar_rule(){}
+    ~Grammar_rule() {}
 
     Grammar_rule(const Grammar_rule& obj)
     {
@@ -77,11 +77,11 @@ public:
 class CF_grammar
 {
 protected:
-    
+
     std::map<std::string, std::shared_ptr<Symbol>> m_terminals;
     std::map<std::string, std::shared_ptr<Symbol>> m_non_terminals;
 
-    std::multimap<Symbol, Grammar_rule> m_rules;                      //РњРЅРѕР¶РµСЃС‚РІРѕ РїСЂР°РІРёР»
+    std::multimap<Symbol, Grammar_rule> m_rules;                      //Множество правил
 public:
     CF_grammar(const std::string filename);
     void print_rules();
@@ -90,11 +90,11 @@ public:
     std::set<std::shared_ptr<Symbol>> FIRST1(const std::shared_ptr<Symbol>& S);
     std::set<std::shared_ptr<Symbol>> FIRST1_REC(const std::shared_ptr<Symbol>& S, std::set<Symbol>& seen);
 
-    //Р¤СѓРЅРєС†РёСЏ РќРђР§1
+    //Функция НАЧ1
     std::set<std::shared_ptr<Symbol>> START1(const std::shared_ptr<Symbol>& S);
     std::set<std::shared_ptr<Symbol>> START1_REC(const std::shared_ptr<Symbol>& S, std::set<Symbol>& seen);
 
-    //Р¤СѓРЅРєС†РёСЏ РљРћРќ1
+    //Функция КОН1
     std::set<std::shared_ptr<Symbol>> END1(const std::shared_ptr<Symbol>& S);
     std::set<std::shared_ptr<Symbol>> END1_REC(const std::shared_ptr<Symbol>& S, std::set<Symbol>& seen);
 
