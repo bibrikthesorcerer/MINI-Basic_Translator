@@ -1,5 +1,5 @@
 #pragma once
-#include"ÑF_grammar.h"
+#include"ï¿½F_grammar.h"
 #include "../LexBlock/lex_block.h"
 #include <stack>
 
@@ -29,7 +29,7 @@ public:
 		create_BF_table();
 		fill_symbol_list(lexem_list);
 	}
-	void sinth_analize();
+	void synth_analize();
 	std::shared_ptr<Symbol> process_wrap(Grammar_rule&);
 private:
 	bool EQUAL(std::shared_ptr<Symbol> A, std::shared_ptr<Symbol> B);
