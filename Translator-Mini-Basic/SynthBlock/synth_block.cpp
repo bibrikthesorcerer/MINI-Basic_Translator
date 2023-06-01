@@ -414,8 +414,11 @@ std::shared_ptr<Symbol> BF_grammar::process_wrap(Grammar_rule& rule)
 	case 2: //[PROGRAM] -> LINE_NUM [OPERATOR] [PROGRAM]
 		atom.type = (ATOM_BASIC::ATOM_TYPE)rule.m_right_part[1]->m_atributes.front();
 		rule.m_right_part[1]->m_atributes.pop_front();
-		rule.m_right_part[1]->m_atributes.pop_front();
-		atom.atributs = rule.m_right_part[1]->m_atributes;
+        if(rule.m_right_part[1]->m_atributes.size() > 2)
+        {
+            rule.m_right_part[1]->m_atributes.pop_front();
+        }
+        atom.atributs = rule.m_right_part[1]->m_atributes;
 		if (atom.type == ATOM_BASIC::FOR || atom.type == ATOM_BASIC::FOR_STEP)
 		{
 			ATOM_BASIC next;

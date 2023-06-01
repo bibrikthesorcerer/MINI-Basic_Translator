@@ -1,6 +1,7 @@
 # VS project folder
 /minibasic-translator
-
+/build-Translator-Mini-Basic-Desktop_Qt_6_4_1_MinGW_64_bit-Debug
+/build-Translator-Mini-Basic-Desktop_Qt_6_5_0_MinGW_64_bit-Debug
 .vs/
 
 # Test object files

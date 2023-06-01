@@ -40,3 +40,6 @@ RESOURCES += \
 OTHERFILES += \
     grammar.txt \
     input.txt
+
+DISTFILES += \
+    ../build-Translator-Mini-Basic-Desktop_Qt_6_4_1_MinGW_64_bit-Debug/grammar.txt
